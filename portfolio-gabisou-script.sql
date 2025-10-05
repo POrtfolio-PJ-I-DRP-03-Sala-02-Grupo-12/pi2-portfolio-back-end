@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `gabisou_db`.`game_images` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(50) NULL,
   `description` VARCHAR(70) NULL,
-  `url` VARCHAR(45) NOT NULL,
+  `url` VARCHAR(500) NOT NULL,
   `game_id` INT NOT NULL,
   PRIMARY KEY (`id`, `game_id`),
   INDEX `fk_project_images_projects_idx` (`game_id` ASC) VISIBLE,
