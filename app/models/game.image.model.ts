@@ -3,9 +3,10 @@ import IGameImage from "../interfaces/IGameImage";
 import connection from "./connection";
 
 const findAll = async (): Promise<IGameImage[]> => {
-    const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
-      'SELECT * FROM game_images;'
-    );
+    const [rows]: [RowDataPacket[], FieldPacket[]] = await connection
+    .query(`SELECT id, title, description, url, game_id FROM game_images;`);
+
+    console.log("ROWS: ", rows);
 
     return rows as IGameImage[];
 };
@@ -13,16 +14,33 @@ const findAll = async (): Promise<IGameImage[]> => {
 const findById = async (idToSearch: number): Promise<IGameImage | null> => {
   try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
-      `
-        SELECT * FROM game_images
-        WHERE id = ?;
+      `SELECT
+        id,
+        title,
+        description,
+        url,
+        game_id AS gameId
+      FROM game_images
+      WHERE id = ?;
       `,
       [idToSearch]
     );
-  
-    if (!rows[0] || rows.length === 0) return null;
-  
-    return rows[0] as IGameImage;
+    
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return null;
+    }
+
+    const imageData = rows[0];
+
+    const gameImage: IGameImage = {
+      id: imageData.id,
+      title: imageData.title,
+      description: imageData.description,
+      url: imageData.url,
+      gameId: imageData.gameId,
+    };
+
+    return gameImage;
   } catch (error) {
     throw new Error((error as Error).message);
   }
