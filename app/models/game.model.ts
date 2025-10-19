@@ -5,18 +5,31 @@ import connection from "./connection";
 const findAll = async (): Promise<IGame[]> => {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `
-        SELECT
-          g.id, g.title, g.description, g.link_name, g.link_url,
-          i.id, i.title, i.description, i.url
-          GROUP_CONCAT(DISTINCT t.title) AS tags,
-        FROM games AS g
-        LEFT JOIN games_tags AS gt
-        ON g.id = gt.game_id
-        LEFT JOIN tags AS t
-        ON gt.tag_id = t.id
-        LEFT JOIN game_images AS i
-        ON g.id = i.game_id
-        GROUP BY g.id, g.title, g.description;
+      SELECT
+	      g.id,
+        g.title,
+        g.description,
+        g.link_name,
+        g.link_url,
+	      i.id AS image_id,
+        i.title AS image_title,
+        i.description AS image_description,
+        i.url AS image_url,
+	      GROUP_CONCAT(DISTINCT t.title) AS tags
+      FROM games AS g
+      LEFT JOIN games_tags AS gt ON g.id = gt.game_id
+      LEFT JOIN tags AS t ON gt.tag_id = t.id
+      LEFT JOIN game_images AS i ON g.id = i.game_id
+      GROUP BY
+	      g.id,
+        g.title,
+        g.description,
+        g.link_name,
+        g.link_url,
+        i.id,
+        i.title,
+        i.description,
+        i.url;
       `,
     );
 
@@ -30,7 +43,7 @@ const findById = async (idToSearch: number): Promise<IGame | null> => {
         SELECT
           g.id, g.title, g.description, g.link_name, g.link_url,
           i.id, i.title, i.description, i.url,
-          GROPUP_CONCAT(DISTINCT t.title) AS tags
+          GROUP_CONCAT(DISTINCT t.title) AS tags
         FROM games AS g
         WHERE g.id = ?
         LEFT JOIN game_images AS i
