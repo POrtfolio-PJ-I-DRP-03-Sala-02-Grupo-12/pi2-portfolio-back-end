@@ -45,3 +45,18 @@ export const mockResultSetHeader = {
 export const mockCreateGameQuery = `INSERT INTO games (title, description, link_name, link_url)
         VALUES (?, ?, ?, ?);
       `;
+
+export const mockFindAllGamesQuery = `
+        SELECT
+          g.id, g.title, g.description, g.link_name, g.link_url,
+          i.id, i.title, i.description, i.url
+          GROUP_CONCAT(DISTINCT t.title) AS tags,
+        FROM games AS g
+        LEFT JOIN games_tags AS gt
+        ON g.id = gt.game_id
+        LEFT JOIN tags AS t
+        ON gt.tag_id = t.id
+        LEFT JOIN game_images AS i
+        ON g.id = i.game_id
+        GROUP BY g.id, g.title, g.description;
+      `;
