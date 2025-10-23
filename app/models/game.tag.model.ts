@@ -2,7 +2,7 @@ import { FieldPacket, ResultSetHeader, RowDataPacket } from "mysql2";
 import connection from "./connection";
 import IGameTag from "../interfaces/IGameTag";
 
-const findAll = async ():Promise<IGameTag[]> => {
+const findAllGamesTags = async ():Promise<IGameTag[]> => {
   const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
     `
       SELECT
@@ -57,7 +57,7 @@ try {
 };
 
 export {
-  findAll,
+  findAllGamesTags,
   createNewGameTag,
   deleteGameTag,
 };
