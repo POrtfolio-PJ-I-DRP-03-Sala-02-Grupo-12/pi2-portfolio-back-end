@@ -1,8 +1,7 @@
-import { createNewImage, findById, updateImage } from '../../models/game.image.model';
-import { mockGameImagesList, mockGameImageUpdated, mockNewGameImage, mockResultSetHeader } from '../mocks/game.images.mock';
+import { createNewImage, findAllImages, findImageById, updateImage } from '../../models/game.image.model';
+import { mockGameImagesList, mockGameImageUpdated, mockNewGameImage } from '../mocks/game.images.mock';
 import connection from '../../models/connection';
 import IGameImage from '../../interfaces/IGameImage';
-
 jest.mock('../../models/connection.ts', () => ({
   __esModule: true,
   default: {
@@ -14,33 +13,47 @@ describe('TESTES DO MODELO GAME IMAGE', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
-  describe('ALTERAÇÃO - Atualização de imagem de jogo', () => {
-    it('Deve atualizar e retornar corretamente o objeto alterado.', async () => {
-      (connection.query as unknown as jest.Mock)
-        .mockResolvedValueOnce([mockResultSetHeader, []])
-        .mockResolvedValueOnce([mockResultSetHeader, []])
-        .mockResolvedValueOnce([mockGameImagesList, []]);
-    
-      const registerResult = await createNewImage(mockNewGameImage as IGameImage);
-      expect(connection.query).toHaveBeenCalledTimes(1);
+  it('LISTA - Retorna corretamente a lista de imagens dos jogos cadastrados',
+  async () => {
+    (connection.query as jest.Mock)
+      .mockResolvedValueOnce([mockGameImagesList, []]);
       
-      const complementedImage = {
-        ...registerResult,
-        title: mockNewGameImage.title,
-        url: mockNewGameImage.url
-      };
-
-      const idToSearch = registerResult?.id as number;
+    const imagesList = await findAllImages();
     
-      const updateResult = await updateImage(complementedImage as IGameImage, idToSearch);
+    expect(connection.query).toHaveBeenCalledTimes(1);
+    expect(imagesList).toEqual(mockGameImagesList);
+  });
 
-      const updatedImage = await findById(idToSearch);
+  it('ALTERAÇÃO - Atualiza corretamente uma imagem de jogo', async () => {
+    const mockImageId = 1;
 
-      expect(connection.query).toHaveBeenCalledTimes(3);
-      expect(updateResult).toEqual(mockResultSetHeader);
-      expect(updatedImage).not.toBeNull();
-      expect(updatedImage).toEqual(mockGameImageUpdated);
-    });
+    (connection.query as jest.Mock)
+      .mockResolvedValueOnce([{ insertId: mockImageId }, []]);
+
+    (connection.query as jest.Mock)
+      .mockResolvedValueOnce([[mockNewGameImage], []]);
+
+    (connection.query as jest.Mock)
+      .mockResolvedValueOnce([ { affectedRows: 1 }, []]);
+
+    (connection.query as jest.Mock)
+      .mockResolvedValueOnce([[mockGameImageUpdated], []]);
+    
+    const registerResult = await createNewImage(mockNewGameImage as IGameImage);
+    expect(registerResult).not.toBeNull();
+    expect(registerResult?.id).toBeDefined();
+
+    const createdImageId = registerResult?.id as number;
+
+    const imageBeforeUpdate = await findImageById(createdImageId);
+
+    await updateImage(mockGameImageUpdated, createdImageId);
+
+    const imageAfterUpdate = await findImageById(createdImageId);
+
+    expect(connection.query).toHaveBeenCalledTimes(4);
+    expect(createdImageId).toEqual(mockImageId);
+    expect(imageBeforeUpdate).toEqual(mockNewGameImage);
+    expect(imageAfterUpdate).toEqual(mockGameImageUpdated);
   });
 });
