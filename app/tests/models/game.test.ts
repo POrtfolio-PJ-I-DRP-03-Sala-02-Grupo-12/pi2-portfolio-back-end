@@ -1,4 +1,4 @@
-import { createNewGame, findAll } from "../../models/game.model";
+import { createNewGame, findAllGames } from "../../models/game.model";
 import {
   mockCreateGameQuery,
   mockGame,
@@ -64,7 +64,7 @@ describe('TESTES DO MODELO GAME', () => {
       await createNewGame(mockGamesList[1] as IGame);
       await createNewGame(mockGamesList[2] as IGame);
 
-      const result = await findAll();
+      const result = await findAllGames();
       
       expect(connection.query).toHaveBeenCalledTimes(4);
       expect(result.length).toBe(3);
