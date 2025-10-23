@@ -2,7 +2,7 @@ import { FieldPacket, ResultSetHeader, RowDataPacket } from "mysql2";
 import IGame from "../interfaces/IGame";
 import connection from "./connection";
 
-const findAll = async (): Promise<IGame[]> => {
+const findAllGames = async (): Promise<IGame[]> => {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `
       SELECT
@@ -36,7 +36,7 @@ const findAll = async (): Promise<IGame[]> => {
     return rows as IGame[];
 };
 
-const findById = async (idToSearch: number): Promise<IGame | null> => {
+const findGameById = async (idToSearch: number): Promise<IGame | null> => {
   try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `
@@ -126,8 +126,8 @@ const deleteGame = async (id: number): Promise<ResultSetHeader | null> => {
 };
 
 export {
-    findAll,
-    findById,
+    findAllGames,
+    findGameById,
     createNewGame,
     updateGame,
     deleteGame,
