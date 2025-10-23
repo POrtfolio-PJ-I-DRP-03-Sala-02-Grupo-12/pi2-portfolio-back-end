@@ -2,45 +2,59 @@ import { FieldPacket, ResultSetHeader, RowDataPacket } from "mysql2";
 import IGameImage from "../interfaces/IGameImage";
 import connection from "./connection";
 
-const findAll = async (): Promise<IGameImage[]> => {
+const findAllImages = async (): Promise<IGameImage[]> => {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection
-    .query(`SELECT id, title, description, url, game_id FROM game_images;`);
-
-    console.log("ROWS: ", rows);
+    .query(
+      `SELECT
+        i.id,
+        i.title,
+        i.description,
+        i.url,
+        JSON_OBJECT(
+          'id', g.id,
+          'title', g.title,
+          'tags', JSON_ARRAYAGG(DISTINCT t.title)
+        ) AS game,
+      FROM game_images AS i
+      LEFT JOIN games AS g ON i.game_id = g.id
+      LEFT JOIN game_tags AS gt ON g.id = gt.game_id
+      LEFT JOIN tags AS t ON gt.tag_id = t.id
+      GROUP BY i.id;
+      `
+    );
 
     return rows as IGameImage[];
 };
 
-const findById = async (idToSearch: number): Promise<IGameImage | null> => {
+const findImageById = async (idToSearch: number): Promise<IGameImage | null> => {
   try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `SELECT
-        id,
-        title,
-        description,
-        url,
-        game_id AS gameId
-      FROM game_images
+        i.id,
+        i.title,
+        i.description,
+        i.url,
+        JSON_OBJECT(
+          'id', g.id,
+          'title', g.title,
+          'tags', JSON_ARRAYAGG(DISTINCT t.title)
+        ) AS game,
+        GROUP_CONCAT(DISTINCT t.title) AS tags,
+      FROM game_images AS i
+      LEFT JOIN games AS g ON i.game_id = g.id
+      LEFT JOIN game_tags AS gt ON g.id = gt.game_id
+      LEFT JOIN tags AS t ON gt.tag_id = t.id
+      GROUP BY i.id
       WHERE id = ?;
       `,
       [idToSearch]
     );
     
-    if (!Array.isArray(rows) || rows.length === 0) {
+    if (!rows) {
       return null;
-    }
+    }    
 
-    const imageData = rows[0];
-
-    const gameImage: IGameImage = {
-      id: imageData.id,
-      title: imageData.title,
-      description: imageData.description,
-      url: imageData.url,
-      gameId: imageData.gameId,
-    };
-
-    return gameImage;
+    return rows[0] as IGameImage;
   } catch (error) {
     throw new Error((error as Error).message);
   }
@@ -108,8 +122,8 @@ const deleteImage = async (id: number): Promise<ResultSetHeader | null> => {
 };
 
 export {
-    findAll,
-    findById,
+    findAllImages,
+    findImageById,
     createNewImage,
     updateImage,
     deleteImage,
