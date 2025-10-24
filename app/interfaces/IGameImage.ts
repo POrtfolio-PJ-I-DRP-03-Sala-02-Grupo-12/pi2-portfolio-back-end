@@ -3,5 +3,10 @@ export default interface IGameImage {
   title?: string;
   description?: string;
   url: string;
-  gameId: number;
-}
+  gameId?: number;
+  game?: {
+    id: number;
+    title?: string;
+    tags?: string[];
+  };
+};

@@ -2,7 +2,7 @@ import { FieldPacket, ResultSetHeader, RowDataPacket } from "mysql2";
 import ITag from "../interfaces/ITag";
 import connection from "./connection";
 
-const findAll = async ():Promise<ITag[]> => {
+const findAllTags = async ():Promise<ITag[]> => {
   const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
     `
       SELECT
@@ -14,7 +14,7 @@ const findAll = async ():Promise<ITag[]> => {
   return rows as ITag[];
 };
 
-const findByTitle = async (titleToSearch: string):Promise<ITag | null> => {
+const findTagByTitle = async (titleToSearch: string):Promise<ITag | null> => {
   try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `
@@ -33,7 +33,7 @@ const findByTitle = async (titleToSearch: string):Promise<ITag | null> => {
   }
 };
 
-const findById = async (idToSearch: number): Promise<ITag | null> => {
+const findTagById = async (idToSearch: number): Promise<ITag | null> => {
   try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `
@@ -99,10 +99,7 @@ const updateTag = async (idToSearch: number, tag: ITag): Promise<ResultSetHeader
 const deleteTag = async (idToDelete: number): Promise<ResultSetHeader | null> => {
 try {
     const [result]: [ResultSetHeader, FieldPacket[]] = await connection.query(
-      `
-        DELETE FROM tags
-        WHERE id = ?;
-      `,
+      'DELETE FROM tags WHERE id = ?;',
       [idToDelete]
     );
 
@@ -115,9 +112,9 @@ try {
 };
 
 export {
-  findAll,
-  findById,
-  findByTitle,
+  findAllTags,
+  findTagById,
+  findTagByTitle,
   createNewTag,
   updateTag,
   deleteTag,
