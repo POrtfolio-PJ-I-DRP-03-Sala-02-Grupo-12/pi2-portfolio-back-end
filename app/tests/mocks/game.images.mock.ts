@@ -17,6 +17,27 @@ export const mockNewGameImage = {
   gameId: 1,
 } as IGameImage;
 
+export const mockGameImagesForGameSearch = [
+  {
+    id: 1,
+    title: 'Imagem para Teste 1',
+    description: 'Descrição da imagem 1',
+    url: 'https://example.com/imagem1.jpg',
+  },
+  {
+    id: 2,
+    title: 'Imagem para Teste 2',
+    description: 'Descrição da imagem 2',
+    url: 'https://example.com/imagem2.jpg',
+  },
+  {
+    id: 3,
+    title: 'Imagem para Teste 3',
+    description: 'Descrição da imagem 3',
+    url: 'https://example.com/imagem2.jpg',
+  }
+] as IGameImage[];
+
 export const mockGameImage2 = {
   id: 2,
   title: 'Imagem para Teste 2',
