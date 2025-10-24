@@ -40,18 +40,38 @@ const findGameById = async (idToSearch: number): Promise<IGame | null> => {
   try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `
-        SELECT
-          g.id, g.title, g.description, g.link_name, g.link_url,
-          i.id, i.title, i.description, i.url,
-          GROUP_CONCAT(DISTINCT t.title) AS tags
-        FROM games AS g
-        WHERE g.id = ?
-        LEFT JOIN game_images AS i
-        ON g.id = i.game_id
-        LEFT JOIN games_tags as gt
-        ON g.id = gt.game_id
-        LEFT JOIN tags AS t
-        ON gt.tag_id = t.id;
+      SELECT
+        g.id,
+        g.title,
+        g.description,
+        g.link_name AS linkName,
+        g.link_url AS linkUrl,
+        COALESCE(
+          JSON_ARRAYAGG(
+            DISTINCT JSON_OBJECT(
+            'id', i.id,
+            'title', i.title,
+            'description', i.description,
+            'url', i.url
+            )
+          ),
+          JSON_ARRAY()
+        ) AS images,
+        COALESCE (
+          JSON_ARRAYAGG(
+            DISTINCT JSON_OBJECT(
+              'id', t.id,
+              'title', t.title
+            )
+          ),
+          JSON_ARRAY()
+        ) AS tags
+      FROM games AS g
+      LEFT JOIN game_images AS i ON g.id = i.game_id
+      LEFT JOIN games_tags as gt ON g.id = gt.game_id
+      LEFT JOIN tags AS t ON gt.tag_id = t.id
+      WHERE g.id = ?
+      GROUP BY g.id, g.title, g.description, g.link_name, g.link_url;
       `,
       [idToSearch]
     );
