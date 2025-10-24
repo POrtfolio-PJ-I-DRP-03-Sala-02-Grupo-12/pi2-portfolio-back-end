@@ -1,7 +1,8 @@
-import { createNewGame, findAllGames } from "../../models/game.model";
+import { createNewGame, findAllGames, findGameById } from "../../models/game.model";
 import {
   mockCreateGameQuery,
   mockGame,
+  mockGameResult,
   mockGamesList,
   mockResultSetHeader,
 } from "../mocks/games.mock";
@@ -72,6 +73,74 @@ describe('TESTES DO MODELO GAME', () => {
       expect(result[1]).toEqual(mockGamesList[1]);
       expect(result[2]).toEqual(mockGamesList[2]);
       expect(result).toEqual(mockGamesList);
+    });
+  });
+
+  describe("BUSCA - busca de um jogo pelo ID", () => {
+    const gameIdToSearch = 1;
+    let result: IGame | null;
+
+    beforeEach(async () => {
+      (connection.query as unknown as jest.Mock).mockResolvedValueOnce([[mockGameResult], []]);
+      result = await findGameById(gameIdToSearch);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    describe("Ao informar um ID existente", () => {
+      it("Deve executar a query apenas uma vez", async () => {
+        expect(connection.query).toHaveBeenCalledTimes(1);
+      });
+
+      it("Deve incluir corretamente cláusulas chave para retorno de dados", async () => {
+        expect(connection.query).toHaveBeenCalledWith(
+          expect.stringContaining('WHERE g.id = ?'),
+          [gameIdToSearch]
+        );
+  
+        expect(connection.query).toHaveBeenCalledWith(
+          expect.stringContaining('JSON_OBJECT'),
+          [1]
+        );
+  
+        expect(connection.query).toHaveBeenCalledWith(
+          expect.stringContaining('JSON_OBJECT'), // Deve usar JSON_OBJECT para tags  
+          [1]
+        );
+  
+        expect(connection.query).toHaveBeenCalledWith(
+          expect.stringContaining('title'), // Deve selecionar o title das imagens
+          [1]
+        );
+      });
+
+      it("Deve retornar o jogo (cadastrado) corretamente ao buscar pelo ID", async () => {        
+        expect(result).toBeDefined();
+        expect(result).not.toBeNull();
+        expect(result).toEqual(mockGameResult);
+        
+        if (!result) {
+          throw new Error("Resultado não deveria ser nulo.");
+        }
+        expect(result.id).toBe(1);
+        expect(result.title).toBe('Jogo para Teste 1');
+      });
+
+      it("Deve retornar o jogo com as imagens relacionadas corretamente", async () => {
+        if (!result || !result.images) throw new Error("Imagens não deveriam ser nulas.");
+        expect(result.images).toHaveLength(2);
+        expect(result.images[0]).toHaveProperty('id');
+        expect(result.images[1].url).toBe('https://example.com/imagem2.jpg');
+      });
+
+      it("Deve retornar o jogo com as tags relacionadas corretamente", async () => {
+        if (!result || !result.tags) throw new Error("Tags não deveriam ser nulas.");
+        expect(result.tags).toHaveLength(3);
+        expect(result.tags[0]).toHaveProperty('title');
+        expect(result.tags[2].title).toBe('Categoria TST 3');
+      });
     });
   });
 });
