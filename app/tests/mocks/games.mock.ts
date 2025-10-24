@@ -1,4 +1,6 @@
 import IGame from "../../interfaces/IGame";
+import IGameImage from "../../interfaces/IGameImage";
+import IGameTag from "../../interfaces/IGameTag";
 
 export const mockGame = {
     id: 1,
@@ -32,6 +34,35 @@ export const mockGamesList = [
   },
 ] as IGame[];
 
+export const mockImagesList = [
+  {
+    id: 1,
+    title: 'Imagem para Teste 1',
+    description: 'Descrição da imagem 1',
+    url: 'https://example.com/imagem1.jpg',
+    gameId: 1
+  },
+  {
+    id: 2,
+    title: 'Imagem para Teste 2',
+    description: 'Descrição da imagem 2',
+    url: 'https://example.com/imagem2.jpg',
+    gameId: 1
+  }
+] as IGameImage[];
+
+export const mockTagsList = [
+  { id: 1, title: 'Categoria TST 1' },
+  { id: 2, title: 'Categoria TST 2' },
+  { id: 3, title: 'Categoria TST 3' }
+];
+
+export const mockGameTags = [
+  { gameId: 1, tagId: 1 },
+  { gameId: 1, tagId: 2 },
+  { gameId: 1, tagId: 3 }
+] as IGameTag[];
+
 export const mockResultSetHeader = {
   insertId: 1,
   affectedRows: 1,
@@ -41,6 +72,34 @@ export const mockResultSetHeader = {
   warningStatus: 0,
   changedRows: 0
 };
+
+export const mockGameResult =
+  {
+    id: 1,
+    title: 'Jogo para Teste 1',
+    description: 'Descrição do jogo 1',
+    linkName: 'Link Jogo 1',
+    linkUrl: 'https://example.com/jogo1',
+    images: [
+      {
+        id: 1,
+        title: 'Imagem para Teste 1',
+        description: 'Descrição da imagem 1',
+        url: 'https://example.com/imagem1.jpg',
+      },
+      {
+        id: 2,
+        title: 'Imagem para Teste 2',
+        description: 'Descrição da imagem 2',
+        url: 'https://example.com/imagem2.jpg',
+      }
+    ],
+    tags: [
+      { id: 1, title: 'Categoria TST 1' },
+      { id: 2, title: 'Categoria TST 2' },
+      { id: 3, title: 'Categoria TST 3' }
+    ]
+  };
 
 export const mockCreateGameQuery = `INSERT INTO games (title, description, link_name, link_url)
         VALUES (?, ?, ?, ?);
