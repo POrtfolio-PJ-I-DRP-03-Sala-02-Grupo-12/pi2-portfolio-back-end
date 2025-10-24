@@ -99,10 +99,7 @@ const updateTag = async (idToSearch: number, tag: ITag): Promise<ResultSetHeader
 const deleteTag = async (idToDelete: number): Promise<ResultSetHeader | null> => {
 try {
     const [result]: [ResultSetHeader, FieldPacket[]] = await connection.query(
-      `
-        DELETE FROM tags
-        WHERE id = ?;
-      `,
+      'DELETE FROM tags WHERE id = ?;',
       [idToDelete]
     );
 
