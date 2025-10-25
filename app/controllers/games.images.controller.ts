@@ -94,7 +94,7 @@ const deleteGameImage = async (req: Request, res: Response) => {
   }
 };
 
-export default {
+export {
   findAllGameImages,
   findGameImageById,
   createNewGameImage,

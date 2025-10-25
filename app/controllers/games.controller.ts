@@ -96,7 +96,7 @@ const deleteGame = async (req: Request, res: Response) => {
   }
 };
 
-export default {
+export {
   findAllGames,
   findGameById,
   createNewGame,

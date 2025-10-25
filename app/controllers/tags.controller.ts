@@ -117,7 +117,7 @@ const deleteTag = async (req: Request, res: Response) => {
   }
 };
 
-export default {
+export {
   findAllTags,
   findTagById,
   findTagByTitle,
