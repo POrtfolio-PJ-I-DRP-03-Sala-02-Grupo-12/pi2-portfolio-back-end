@@ -12,11 +12,10 @@
   },
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && nodemon dist/server.js",
-    "dev": "nodemon --exec ts-node app/server.ts",
+    "start": "tsc && node dist/server.js",
+    "dev": "tsc && node --watch dist/server.js",
     "test": "jest"
   },
   "dependencies": {
