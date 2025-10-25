@@ -1,0 +1,68 @@
+import { Request, Response } from "express";
+import { gamesTagsService } from "../services/index.services";
+import IGameTag from "../interfaces/IGameTag";
+import { ResultSetHeader } from "mysql2/promise";
+
+const findAllGamesTags = async (_req: Request, res: Response) => {
+  try {
+    const gamesTags: IGameTag[] | string = await gamesTagsService
+      .findAllGamesTags();
+
+    if (typeof gamesTags === 'string') {
+      return res.status(404).json({ message: gamesTags });
+    }
+    
+    return res.status(200).json(gamesTags);
+  } catch (error) {
+    return res.status(500)
+    .json({
+      message: 'Erro no servidor ao buscar jogos associados a categorias: '
+      + (error as Error).message
+    });
+  }
+};
+
+const createNewGameTag = async (req: Request, res: Response) => {
+  try {
+    const gameTag = req.body;
+    const newGameTag: IGameTag | string = await gamesTagsService
+      .createNewGameTag(gameTag);
+
+    if (typeof newGameTag === 'string') {
+      return res.status(400).json({ message: newGameTag });
+    }
+
+    return res.status(201).json(newGameTag);
+  } catch (error) {
+    return res.status(500)
+    .json({
+      message: 'Erro no servidor ao associar categoria ao jogo: '
+      + (error as Error).message
+    });
+  }
+};
+
+const deleteGameTag = async (req: Request, res: Response) => {
+  try {
+    const gameTagToDelete = req.body;
+    const deletedGameTag: ResultSetHeader | string = await gamesTagsService.  deleteGameTag(gameTagToDelete);
+
+    if (typeof deletedGameTag === 'string') {
+      return res.status(400).json({ message: deletedGameTag });
+    }
+
+    return res.status(200).json(deletedGameTag);
+  } catch (error) {
+    return res.status(500)
+    .json({
+      message: 'Erro no servidor ao deletar associação da categoria ao jogo: '
+      + (error as Error).message
+    });
+  }
+};
+
+export {
+  findAllGamesTags,
+  createNewGameTag,
+  deleteGameTag,
+};
