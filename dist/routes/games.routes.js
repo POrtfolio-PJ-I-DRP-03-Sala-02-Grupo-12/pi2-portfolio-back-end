@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const index_controllers_1 = require("../controllers/index.controllers");
+const gamesRouter = (0, express_1.Router)();
+gamesRouter.get('/api/projects/', index_controllers_1.gamesController.findAllGames);
+gamesRouter.get('/api/projects/:id', index_controllers_1.gamesController.findGameById);
+gamesRouter.post('/api/projects/', index_controllers_1.gamesController.createNewGame);
+gamesRouter.put('/api/projects/:id', index_controllers_1.gamesController.updateGame);
+gamesRouter.delete('/api/projects/:id', index_controllers_1.gamesController.deleteGame);
+exports.default = gamesRouter;
