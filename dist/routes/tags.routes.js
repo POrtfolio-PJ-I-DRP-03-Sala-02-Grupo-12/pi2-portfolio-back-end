@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const index_controllers_1 = require("../controllers/index.controllers");
+const tagsRouter = (0, express_1.Router)();
+tagsRouter.get('/api/projects/tags/', index_controllers_1.tagsController.findAllTags);
+tagsRouter.get('/api/projects/tags/id/:id', index_controllers_1.tagsController.findTagById);
+tagsRouter.get('/api/projects/tags/search', index_controllers_1.tagsController.findTagByTitle);
+tagsRouter.post('/api/projects/tags/', index_controllers_1.tagsController.createNewTag);
+tagsRouter.put('/api/projects/tags/:id', index_controllers_1.tagsController.updateTag);
+tagsRouter.delete('/api/projects/tags/:id', index_controllers_1.tagsController.deleteTag);
+exports.default = tagsRouter;
