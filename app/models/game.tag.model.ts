@@ -5,9 +5,9 @@ import IGameTag from "../interfaces/IGameTag";
 const findAllGamesTags = async ():Promise<IGameTag[]> => {
   const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
     `
-      SELECT
-        gt.game_id AS game_id, gt.tag_titlte AS tag_title,
-      FROM games_tags AS gt;
+    SELECT
+      gt.game_id AS game_id, gt.tag_titlte AS tag_title
+    FROM games_tags AS gt;
     `,
   );
 
@@ -20,8 +20,8 @@ const createNewGameTag = async (gameTag: IGameTag): Promise<IGameTag | null> => 
 
     const [result]: [ResultSetHeader, FieldPacket[]] = await connection.query(
       `
-        INSERT INTO games_tags (game_id, tag_id)
-        VALUES (?, ?);
+      INSERT INTO games_tags (game_id, tag_id)
+      VALUES (?, ?);
       `,
       [gameId, tagId]
     );
@@ -42,8 +42,8 @@ try {
 
     const [result]: [ResultSetHeader, FieldPacket[]] = await connection.query(
       `
-        DELETE FROM games_tags
-        WHERE game_id = ?, tag_id = ?;
+      DELETE FROM games_tags
+      WHERE game_id = ?, tag_id = ?;
       `,
       [gameId, tagId]
     );
