@@ -4,11 +4,7 @@ import connection from "./connection";
 
 const findAllTags = async ():Promise<ITag[]> => {
   const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
-    `
-      SELECT
-        t.id, t.title,
-      FROM tags AS t;
-    `,
+    'SELECT t.id, t.title FROM tags AS t;'
   );
 
   return rows as ITag[];
@@ -18,9 +14,9 @@ const findTagByTitle = async (titleToSearch: string):Promise<ITag | null> => {
   try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `
-        SELECT t.id, t.title,
-        FROM tags as t
-        WHERE = t.title = ?;
+      SELECT t.id, t.title
+      FROM tags as t
+      WHERE = t.title = ?;
       `,
       [titleToSearch]
     );
@@ -37,9 +33,9 @@ const findTagById = async (idToSearch: number): Promise<ITag | null> => {
   try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `
-        SELECT t.id, t.title,
-        FROM tags as t
-        WHERE = t.id = ?;
+      SELECT t.id, t.title
+      FROM tags as t
+      WHERE = t.id = ?;
       `,
       [idToSearch]
     );
@@ -58,8 +54,8 @@ const createNewTag = async (tag: ITag): Promise<ITag | null> => {
 
     const [result]: [ResultSetHeader, FieldPacket[]] = await connection.query(
       `
-        INSERT INTO tags (title)
-        VALUES (?);
+      INSERT INTO tags (title)
+      VALUES (?);
       `,
       [title]
     );
@@ -81,9 +77,9 @@ const updateTag = async (idToSearch: number, tag: ITag): Promise<ResultSetHeader
 
     const [result]: [ResultSetHeader, FieldPacket[]] = await connection.query(
       `
-        UPDATE tags
-        SET title = ?
-        WHERE id = ?;
+      UPDATE tags
+      SET title = ?
+      WHERE id = ?;
       `,
       [title, idToSearch]
     );
