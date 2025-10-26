@@ -11,11 +11,13 @@ const findAllGames = async (): Promise<IGame[]> => {
         g.description,
         g.link_name,
         g.link_url,
-	      i.id AS image_id,
-        i.title AS image_title,
-        i.description AS image_description,
-        i.url AS image_url,
-	      GROUP_CONCAT(DISTINCT t.title) AS tags
+        JSON_ARRAYAGG(DISTINCT JSON_OBJECT(
+	        'id', i.id,
+          'title', i.title,
+          'description', i.description,
+          'url', i.url
+        )) AS images,
+	      JSON_ARRAYAGG(DISTINCT t.title) AS tags
       FROM games AS g
       LEFT JOIN games_tags AS gt ON g.id = gt.game_id
       LEFT JOIN tags AS t ON gt.tag_id = t.id
