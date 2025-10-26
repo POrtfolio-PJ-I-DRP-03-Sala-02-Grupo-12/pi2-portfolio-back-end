@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import IGame from "../interfaces/IGame";
+import IGame, { IGameUpdateResult } from "../interfaces/IGame";
 import { gamesService } from "../services/index.services";
 import { ResultSetHeader } from "mysql2/promise";
 
@@ -61,14 +61,14 @@ const updateGame = async (req: Request, res: Response) => {
     const { id } = req.params;
     const gameData: IGame = req.body;
 
-    const updatedGame: ResultSetHeader | string = await gamesService
+    const updatedGame: IGameUpdateResult | string = await gamesService
       .updateGame(gameData, Number(id));
 
     if (typeof updatedGame === 'string') {
       return res.status(400).json({ message: updatedGame });
     }
 
-    return res.status(200).json(updatedGame);
+    return res.status(202).json(updatedGame);
   } catch (error) {
     res.status(500)
       .json({
@@ -81,13 +81,18 @@ const deleteGame = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const excludedGame: ResultSetHeader | string = await gamesService.deleteGame(Number(id));
+    const exclusionResult: ResultSetHeader | string = await gamesService.deleteGame(Number(id));
 
-    if (typeof excludedGame === 'string') {
-      return res.status(400).json({ message: excludedGame });
+    if (typeof exclusionResult === 'string') {
+      return res.status(400).json({ message: exclusionResult });
     }
 
-    return res.status(200).json(excludedGame);
+    return res
+      .status(202)
+      .json({
+        result: exclusionResult,
+        message: `Jogo com o id ${id} excluído com sucesso.`
+      });
   } catch (error) {
     res.status(500)
       .json({
