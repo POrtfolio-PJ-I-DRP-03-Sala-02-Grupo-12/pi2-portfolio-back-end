@@ -16,7 +16,7 @@ exports.deleteGame = exports.updateGame = exports.createNewGame = exports.findGa
 const connection_1 = __importDefault(require("./connection"));
 const findAllGames = () => __awaiter(void 0, void 0, void 0, function* () {
     const [rows] = yield connection_1.default.query(`
-      SELECT
+      SELECT DISTINCT
 	      g.id,
         g.title,
         g.description,

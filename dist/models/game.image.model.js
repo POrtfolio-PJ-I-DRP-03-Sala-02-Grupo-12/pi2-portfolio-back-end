@@ -15,30 +15,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteImage = exports.updateImage = exports.createNewImage = exports.findImageById = exports.findAllImages = void 0;
 const connection_1 = __importDefault(require("./connection"));
 const findAllImages = () => __awaiter(void 0, void 0, void 0, function* () {
-    const [rows] = yield connection_1.default
-        .query(`SELECT
-        i.id,
-        i.title,
-        i.description,
-        i.url,
-        JSON_OBJECT(
-          'id', g.id,
-          'title', g.title,
-          'tags', JSON_ARRAYAGG(t.title)
-        ) AS game
-      FROM game_images AS i
-      LEFT JOIN games AS g ON i.game_id = g.id
-      LEFT JOIN games_tags AS gt ON g.id = gt.game_id
-      LEFT JOIN tags AS t ON gt.tag_id = t.id
-      GROUP BY
-        i.id,
-        i.title,
-        i.description,
-        i.url,
-        g.id,
-        g.title;
-      `);
-    return rows;
+    try {
+        const [rows] = yield connection_1.default
+            .query(`SELECT
+          i.id,
+          i.title,
+          i.description,
+          i.url,
+          JSON_OBJECT(
+            'id', g.id,
+            'title', g.title,
+            'tags', JSON_ARRAYAGG(t.title)
+          ) AS game
+        FROM game_images AS i
+        LEFT JOIN games AS g ON i.game_id = g.id
+        LEFT JOIN games_tags AS gt ON g.id = gt.game_id
+        LEFT JOIN tags AS t ON gt.tag_id = t.id
+        GROUP BY
+          i.id,
+          i.title,
+          i.description,
+          i.url,
+          g.id,
+          g.title;`);
+        return rows;
+    }
+    catch (error) {
+        throw new Error(error.message);
+    }
 });
 exports.findAllImages = findAllImages;
 const findImageById = (idToSearch) => __awaiter(void 0, void 0, void 0, function* () {
