@@ -1,5 +1,5 @@
 import { ResultSetHeader } from "mysql2/promise";
-import IGame from "../interfaces/IGame";
+import IGame, { IGameUpdateResult } from "../interfaces/IGame";
 import { gameModel } from "../models/index.model";
 
 const findAllGames = async (): Promise<IGame[] | string> => {
@@ -47,16 +47,29 @@ const createNewGame = async (game: IGame): Promise<IGame | string> => {
   }
 };
 
-const updateGame = async (gameToUpdate: IGame, id: number): Promise<ResultSetHeader | string> => {
+const updateGame = async (gameToUpdate: IGame, id: number): Promise<IGameUpdateResult | string> => {
   try {
-    const updatedGame: ResultSetHeader | null = await gameModel
-    .updateGame(gameToUpdate, id);
+    const gameFoundToUpdate: IGame | null = await gameModel.findGameById(id);
 
-    if (!updatedGame) return `Não foi possível alterar os dados do jogo com o id ${id}`;
+    if (!gameFoundToUpdate) {
+      return `Jogo com o id ${id} não encontrado para atualização.`;
+    }
+
+    const mergedGameData: IGame = { ...gameFoundToUpdate, ...gameToUpdate };
+    delete mergedGameData.id;
+    delete mergedGameData.images;
+    delete mergedGameData.tags;
+
+    const updateResult: ResultSetHeader | null = await gameModel
+    .updateGame(mergedGameData, id);
+
+    if (!updateResult) return `Não foi possível alterar os dados do jogo com o id ${id}`;
+
+    const updatedGame: IGame | null = await gameModel.findGameById(id);
     
-    return updatedGame;
+    return {updateResult, updatedGame} as IGameUpdateResult;
   } catch (error) {
-    return `Ocorreu um erro na alteração de dados do jogo. ${(error as Error).message}`;
+    return `Ocorreu um erro na alteração de dados do jogo: ${(error as Error).message}`;
   }
 };
 
@@ -72,7 +85,7 @@ const deleteGame = async (id: number): Promise<ResultSetHeader | string> => {
     
     return excludedGame;
   } catch (error) {
-    return `Ocorreu um erro ao tentar excluir o jogo do banco de dados. ${(error as Error).message}`;
+    return `Ocorreu um erro ao tentar excluir o jogo do banco de dados: ${(error as Error).message}`;
   }
 };
 
