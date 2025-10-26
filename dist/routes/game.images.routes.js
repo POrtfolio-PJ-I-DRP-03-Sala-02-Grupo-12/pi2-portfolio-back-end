@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const index_controllers_1 = require("../controllers/index.controllers");
-const gameImagesRoutes = (0, express_1.Router)();
-gameImagesRoutes.get('/api/projects/images', index_controllers_1.gamesImagesController.findAllGameImages);
-gameImagesRoutes.get('/api/projects/images/:id', index_controllers_1.gamesImagesController.findGameImageById);
-gameImagesRoutes.post('/api/projects/images', index_controllers_1.gamesImagesController.createNewGameImage);
-gameImagesRoutes.put('/api/projects/images/:id', index_controllers_1.gamesImagesController.updateGameImage);
-gameImagesRoutes.delete('/api/projects/images/:id', index_controllers_1.gamesImagesController.deleteGameImage);
-exports.default = gameImagesRoutes;
+const gameImagesRouter = (0, express_1.Router)();
+gameImagesRouter.get('/api/projects/images/', index_controllers_1.gamesImagesController.findAllGameImages);
+gameImagesRouter.get('/api/projects/images/:id', index_controllers_1.gamesImagesController.findGameImageById);
+gameImagesRouter.post('/api/projects/images', index_controllers_1.gamesImagesController.createNewGameImage);
+gameImagesRouter.put('/api/projects/images/:id', index_controllers_1.gamesImagesController.updateGameImage);
+gameImagesRouter.delete('/api/projects/images/:id', index_controllers_1.gamesImagesController.deleteGameImage);
+exports.default = gameImagesRouter;

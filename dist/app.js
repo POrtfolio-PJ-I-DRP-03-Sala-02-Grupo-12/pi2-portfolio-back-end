@@ -14,8 +14,8 @@ app.use((req, _res, next) => {
     req.db = connection_1.default;
     next();
 });
-app.use(index_routes_1.gamesRouter);
 app.use(index_routes_1.gameImagesRouter);
-app.use(index_routes_1.tagsRouter);
 app.use(index_routes_1.gamesTagsRouter);
+app.use(index_routes_1.tagsRouter);
+app.use(index_routes_1.gamesRouter);
 exports.default = app;

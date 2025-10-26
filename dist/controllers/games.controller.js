@@ -70,7 +70,7 @@ const updateGame = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (typeof updatedGame === 'string') {
             return res.status(400).json({ message: updatedGame });
         }
-        return res.status(200).json(updatedGame);
+        return res.status(202).json(updatedGame);
     }
     catch (error) {
         res.status(500)
@@ -88,7 +88,7 @@ const deleteGame = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             return res.status(400).json({ message: exclusionResult });
         }
         return res
-            .status(200)
+            .status(202)
             .json({
             result: exclusionResult,
             message: `Jogo com o id ${id} excluído com sucesso.`
