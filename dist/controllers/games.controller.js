@@ -83,11 +83,16 @@ exports.updateGame = updateGame;
 const deleteGame = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const excludedGame = yield index_services_1.gamesService.deleteGame(Number(id));
-        if (typeof excludedGame === 'string') {
-            return res.status(400).json({ message: excludedGame });
+        const exclusionResult = yield index_services_1.gamesService.deleteGame(Number(id));
+        if (typeof exclusionResult === 'string') {
+            return res.status(400).json({ message: exclusionResult });
         }
-        return res.status(200).json(excludedGame);
+        return res
+            .status(200)
+            .json({
+            result: exclusionResult,
+            message: `Jogo com o id ${id} excluído com sucesso.`
+        });
     }
     catch (error) {
         res.status(500)

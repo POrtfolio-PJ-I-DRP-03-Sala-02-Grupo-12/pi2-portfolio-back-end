@@ -56,14 +56,23 @@ const createNewGame = (game) => __awaiter(void 0, void 0, void 0, function* () {
 exports.createNewGame = createNewGame;
 const updateGame = (gameToUpdate, id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const updatedGame = yield index_model_1.gameModel
-            .updateGame(gameToUpdate, id);
-        if (!updatedGame)
+        const gameFoundToUpdate = yield index_model_1.gameModel.findGameById(id);
+        if (!gameFoundToUpdate) {
+            return `Jogo com o id ${id} não encontrado para atualização.`;
+        }
+        const mergedGameData = Object.assign(Object.assign({}, gameFoundToUpdate), gameToUpdate);
+        delete mergedGameData.id;
+        delete mergedGameData.images;
+        delete mergedGameData.tags;
+        const updateResult = yield index_model_1.gameModel
+            .updateGame(mergedGameData, id);
+        if (!updateResult)
             return `Não foi possível alterar os dados do jogo com o id ${id}`;
-        return updatedGame;
+        const updatedGame = yield index_model_1.gameModel.findGameById(id);
+        return { updateResult, updatedGame };
     }
     catch (error) {
-        return `Ocorreu um erro na alteração de dados do jogo. ${error.message}`;
+        return `Ocorreu um erro na alteração de dados do jogo: ${error.message}`;
     }
 });
 exports.updateGame = updateGame;
@@ -77,7 +86,7 @@ const deleteGame = (id) => __awaiter(void 0, void 0, void 0, function* () {
         return excludedGame;
     }
     catch (error) {
-        return `Ocorreu um erro ao tentar excluir o jogo do banco de dados. ${error.message}`;
+        return `Ocorreu um erro ao tentar excluir o jogo do banco de dados: ${error.message}`;
     }
 });
 exports.deleteGame = deleteGame;
