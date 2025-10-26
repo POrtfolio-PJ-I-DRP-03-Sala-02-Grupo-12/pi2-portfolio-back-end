@@ -1,3 +1,4 @@
+import { ResultSetHeader } from "mysql2";
 import IGameImage from "./IGameImage";
 import ITag from "./ITag";
 
@@ -9,4 +10,9 @@ export default interface IGame {
   linkUrl: string;
   tags?: ITag[];
   images?: IGameImage[];
+}
+
+export interface IGameUpdateResult {
+  updateResult: ResultSetHeader;
+  updatedGame: IGame;
 }
