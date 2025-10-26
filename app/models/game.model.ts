@@ -11,11 +11,24 @@ const findAllGames = async (): Promise<IGame[]> => {
         g.description,
         g.link_name,
         g.link_url,
-	      i.id AS image_id,
-        i.title AS image_title,
-        i.description AS image_description,
-        i.url AS image_url,
-	      GROUP_CONCAT(DISTINCT t.title) AS tags
+        (
+          SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', i.id,
+                'title', i.title,
+                'description', i.description,
+                'url', i.url
+            )
+          )
+          FROM game_images AS i
+          WHERE i.game_id = g.id
+        ) AS images,
+	      (
+          SELECT JSON_ARRAYAGG(t.title)
+          FROM games_tags AS gt
+          JOIN tags AS t ON gt.tag_id = t.id
+          WHERE gt.game_id = g.id
+        ) AS tags
       FROM games AS g
       LEFT JOIN games_tags AS gt ON g.id = gt.game_id
       LEFT JOIN tags AS t ON gt.tag_id = t.id
@@ -46,25 +59,23 @@ const findGameById = async (idToSearch: number): Promise<IGame | null> => {
         g.description,
         g.link_name AS linkName,
         g.link_url AS linkUrl,
-        COALESCE(
-          JSON_ARRAYAGG(
-            DISTINCT JSON_OBJECT(
-            'id', i.id,
-            'title', i.title,
-            'description', i.description,
-            'url', i.url
+        (
+          SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', i.id,
+                'title', i.title,
+                'description', i.description,
+                'url', i.url
             )
-          ),
-          JSON_ARRAY()
+          )
+          FROM game_images AS i
+          WHERE i.game_id = g.id
         ) AS images,
-        COALESCE (
-          JSON_ARRAYAGG(
-            DISTINCT JSON_OBJECT(
-              'id', t.id,
-              'title', t.title
-            )
-          ),
-          JSON_ARRAY()
+	      (
+          SELECT JSON_ARRAYAGG(t.title)
+          FROM games_tags AS gt
+          JOIN tags AS t ON gt.tag_id = t.id
+          WHERE gt.game_id = g.id
         ) AS tags
       FROM games AS g
       LEFT JOIN game_images AS i ON g.id = i.game_id
