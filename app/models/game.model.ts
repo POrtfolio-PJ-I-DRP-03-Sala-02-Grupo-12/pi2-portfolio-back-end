@@ -5,7 +5,7 @@ import connection from "./connection";
 const findAllGames = async (): Promise<IGame[]> => {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `
-      SELECT
+      SELECT DISTINCT
 	      g.id,
         g.title,
         g.description,
