@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
-import { gamesTagsService } from "../services/index.services";
+import { gamesService, gamesTagsService, tagsService } from "../services/index.services";
 import IGameTag from "../interfaces/IGameTag";
 import { ResultSetHeader } from "mysql2/promise";
+import IGame from "../interfaces/IGame";
+import ITag from "../interfaces/ITag";
 
 const findAllGamesTags = async (_req: Request, res: Response) => {
   try {
@@ -44,14 +46,50 @@ const createNewGameTag = async (req: Request, res: Response) => {
 
 const deleteGameTag = async (req: Request, res: Response) => {
   try {
-    const gameTagToDelete = req.body;
-    const deletedGameTag: ResultSetHeader | string = await gamesTagsService.  deleteGameTag(gameTagToDelete);
+    const { gameId, tagId } = req.params;
+
+    const deletedGameTag: ResultSetHeader | string = await gamesTagsService
+      .deleteGameTag(Number(gameId), Number(tagId));
 
     if (typeof deletedGameTag === 'string') {
       return res.status(400).json({ message: deletedGameTag });
     }
 
-    return res.status(200).json(deletedGameTag);
+    const game: IGame | string = await gamesService
+      .findGameById(Number(gameId));
+
+    const tag: ITag | string = await tagsService.findTagById(Number(tagId));
+
+    if (
+      !game
+      || typeof game === 'string'
+      || !tag
+      || typeof tag === 'string'
+      || !game.id
+      || !tag.id
+    ) {
+      res
+        .status(404)
+        .json({
+          message: `Não encontramos jogo com id: ${gameId} ou categria com o id
+          ${tagId}, favor verificar os dados.`
+        });
+    }
+
+    return res.status(202).json({
+      deletedGameTag,
+      message: 'Relacionamento entre ' 
+      + (typeof game === 'object' && 'title' in game
+          ? game.title.toUpperCase()
+          : ''
+        )
+      + ' e '
+      + (typeof tag === 'object' && 'title' in tag
+          ? tag.title.toUpperCase()
+          : ''
+        )
+      + ' excluído com sucesso.'
+    });
   } catch (error) {
     return res.status(500)
     .json({

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import IGameImage from "../interfaces/IGameImage";
+import IGameImage, { IGameImageUpdateResult } from "../interfaces/IGameImage";
 import { gameImagesService } from "../services/index.services";
 import { ResultSetHeader } from "mysql2/promise";
 
@@ -60,14 +60,14 @@ const updateGameImage = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const gameImageData: IGameImage = req.body;
-    const updatedGameImage: ResultSetHeader | string = await gameImagesService
-      .updateGameImage(gameImageData, Number(id));
+    const updatedGameImage: IGameImageUpdateResult | string = await
+      gameImagesService.updateGameImage(gameImageData, Number(id));
 
     if (typeof updatedGameImage === 'string') {
       return res.status(400).json({ message: updatedGameImage });
     }
 
-    return res.status(200).json(updatedGameImage);
+    return res.status(202).json(updatedGameImage);
   } catch (error) {
     res.status(500)
       .json({
@@ -79,13 +79,16 @@ const updateGameImage = async (req: Request, res: Response) => {
 const deleteGameImage = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const deletedGameImage: ResultSetHeader | string = await gameImagesService.deleteGameImage(Number(id));
+    const deleteResult: ResultSetHeader | string = await gameImagesService.deleteGameImage(Number(id));
 
-    if (typeof deletedGameImage === 'string') {
-      return res.status(400).json({ message: deletedGameImage });
+    if (typeof deleteResult === 'string') {
+      return res.status(400).json({ message: deleteResult });
     }
 
-    return res.status(200).json(deletedGameImage);
+    return res.status(202).json({
+      result: deleteResult,
+      message: `Imagem de jogo, com o id ${id}, deletada com sucesso.`
+    });
   } catch (error) {
     res.status(500)
       .json({
