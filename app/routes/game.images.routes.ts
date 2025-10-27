@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { gamesImagesController } from "../controllers/index.controllers";
 
-const gameImagesRoutes = Router();
+const gameImagesRouter = Router();
 
-gameImagesRoutes.get('/api/projects/images', gamesImagesController.findAllGameImages);
-gameImagesRoutes.get('/api/projects/images/:id', gamesImagesController.findGameImageById);
-gameImagesRoutes.post('/api/projects/images', gamesImagesController.createNewGameImage);
-gameImagesRoutes.put('/api/projects/images/:id', gamesImagesController.updateGameImage);
-gameImagesRoutes.delete('/api/projects/images/:id', gamesImagesController.deleteGameImage);
+gameImagesRouter.get('/api/projects/images/', gamesImagesController.findAllGameImages);
+gameImagesRouter.get('/api/projects/images/:id', gamesImagesController.findGameImageById);
+gameImagesRouter.post('/api/projects/images', gamesImagesController.createNewGameImage);
+gameImagesRouter.put('/api/projects/images/:id', gamesImagesController.updateGameImage);
+gameImagesRouter.delete('/api/projects/images/:id', gamesImagesController.deleteGameImage);
 
-export default gameImagesRoutes;
+export default gameImagesRouter;
 
