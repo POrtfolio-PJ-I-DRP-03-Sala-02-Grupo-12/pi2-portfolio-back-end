@@ -79,15 +79,15 @@ const createNewTag = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.createNewTag = createNewTag;
 const updateTag = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const tagToUpdate = req.body;
     try {
+        const { id } = req.params;
+        const tagToUpdate = req.body;
         const updatedTag = yield index_services_1.tagsService
             .updateTag(Number(id), tagToUpdate);
         if (typeof updatedTag === 'string') {
             return res.status(400).json({ message: updatedTag });
         }
-        return res.status(200).json(updatedTag);
+        return res.status(202).json(updatedTag);
     }
     catch (error) {
         return res.status(500)
@@ -104,7 +104,10 @@ const deleteTag = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (typeof deletedTag === 'string') {
             return res.status(400).json({ message: deletedTag });
         }
-        return res.status(200).json(deletedTag);
+        return res.status(202).json({
+            result: deletedTag,
+            message: `Categoria, com o id ${id}, deletada com sucesso.`
+        });
     }
     catch (error) {
         return res.status(500)

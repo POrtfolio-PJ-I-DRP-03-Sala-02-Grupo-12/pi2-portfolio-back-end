@@ -65,12 +65,11 @@ const updateGameImage = (req, res) => __awaiter(void 0, void 0, void 0, function
     try {
         const { id } = req.params;
         const gameImageData = req.body;
-        const updatedGameImage = yield index_services_1.gameImagesService
-            .updateGameImage(gameImageData, Number(id));
+        const updatedGameImage = yield index_services_1.gameImagesService.updateGameImage(gameImageData, Number(id));
         if (typeof updatedGameImage === 'string') {
             return res.status(400).json({ message: updatedGameImage });
         }
-        return res.status(200).json(updatedGameImage);
+        return res.status(202).json(updatedGameImage);
     }
     catch (error) {
         res.status(500)
@@ -83,11 +82,14 @@ exports.updateGameImage = updateGameImage;
 const deleteGameImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const deletedGameImage = yield index_services_1.gameImagesService.deleteGameImage(Number(id));
-        if (typeof deletedGameImage === 'string') {
-            return res.status(400).json({ message: deletedGameImage });
+        const deleteResult = yield index_services_1.gameImagesService.deleteGameImage(Number(id));
+        if (typeof deleteResult === 'string') {
+            return res.status(400).json({ message: deleteResult });
         }
-        return res.status(200).json(deletedGameImage);
+        return res.status(202).json({
+            result: deleteResult,
+            message: `Imagem de jogo, com o id ${id}, deletada com sucesso.`
+        });
     }
     catch (error) {
         res.status(500)

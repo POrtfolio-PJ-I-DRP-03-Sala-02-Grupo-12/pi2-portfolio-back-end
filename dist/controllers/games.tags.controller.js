@@ -50,12 +50,40 @@ const createNewGameTag = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.createNewGameTag = createNewGameTag;
 const deleteGameTag = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const gameTagToDelete = req.body;
-        const deletedGameTag = yield index_services_1.gamesTagsService.deleteGameTag(gameTagToDelete);
+        const { gameId, tagId } = req.params;
+        const deletedGameTag = yield index_services_1.gamesTagsService
+            .deleteGameTag(Number(gameId), Number(tagId));
         if (typeof deletedGameTag === 'string') {
             return res.status(400).json({ message: deletedGameTag });
         }
-        return res.status(200).json(deletedGameTag);
+        const game = yield index_services_1.gamesService
+            .findGameById(Number(gameId));
+        const tag = yield index_services_1.tagsService.findTagById(Number(tagId));
+        if (!game
+            || typeof game === 'string'
+            || !tag
+            || typeof tag === 'string'
+            || !game.id
+            || !tag.id) {
+            res
+                .status(404)
+                .json({
+                message: `Não encontramos jogo com id: ${gameId} ou categria com o id
+          ${tagId}, favor verificar os dados.`
+            });
+        }
+        return res.status(202).json({
+            deletedGameTag,
+            message: 'Relacionamento entre '
+                + (typeof game === 'object' && 'title' in game
+                    ? game.title.toUpperCase()
+                    : '')
+                + ' e '
+                + (typeof tag === 'object' && 'title' in tag
+                    ? tag.title.toUpperCase()
+                    : '')
+                + ' excluído com sucesso.'
+        });
     }
     catch (error) {
         return res.status(500)

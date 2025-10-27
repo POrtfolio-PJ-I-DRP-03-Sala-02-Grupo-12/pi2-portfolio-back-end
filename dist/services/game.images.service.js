@@ -54,12 +54,22 @@ const createNewGameImage = (gameImage) => __awaiter(void 0, void 0, void 0, func
 });
 exports.createNewGameImage = createNewGameImage;
 const updateGameImage = (gameImageToUpdate, id) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const updatedGameImage = yield index_model_1.gameImageModel
-            .updateImage(gameImageToUpdate, id);
-        if (!updatedGameImage)
+        const imageFoundToUpdate = yield index_model_1.gameImageModel.findImageById(id);
+        if (!imageFoundToUpdate) {
+            return `Imagem de jogo, com o id ${id}, não encontrada para atualização.`;
+        }
+        const mergedImageData = Object.assign(Object.assign(Object.assign({}, imageFoundToUpdate), gameImageToUpdate), { gameId: (_a = imageFoundToUpdate.game) === null || _a === void 0 ? void 0 : _a.id });
+        delete mergedImageData.id;
+        delete mergedImageData.game;
+        const updateResult = yield index_model_1.gameImageModel
+            .updateImage(mergedImageData, id);
+        if (!updateResult)
             return `Não foi possível alterar os dados da imagem do jogo com o id ${id}`;
-        return updatedGameImage;
+        const updatedGameImage = yield index_model_1.gameImageModel
+            .findImageById(id);
+        return { updateResult, updatedGameImage };
     }
     catch (error) {
         return `Ocorreu um erro na alteração de dados da imagem do jogo. ${error.message}`;

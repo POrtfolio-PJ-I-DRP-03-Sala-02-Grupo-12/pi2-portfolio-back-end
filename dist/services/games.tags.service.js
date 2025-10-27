@@ -40,13 +40,13 @@ const createNewGameTag = (gameTag) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.createNewGameTag = createNewGameTag;
-const deleteGameTag = (gameTagToDelete) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteGameTag = (gameId, tagId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const deletedGameTag = yield index_model_1.gameTagModel.deleteGameTag(gameTagToDelete);
+        const deletedGameTag = yield index_model_1.gameTagModel.deleteGameTag(gameId, tagId);
         if (!deletedGameTag) {
             return `Não foi possível deletar a associação da categoria ao jogo com os seguintes dados:
-        gameId: ${gameTagToDelete.gameId}
-        tagId: ${gameTagToDelete.tagId}
+        gameId: ${gameId}
+        tagId: ${tagId}
       `;
         }
         return deletedGameTag;

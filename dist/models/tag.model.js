@@ -15,16 +15,75 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteTag = exports.updateTag = exports.createNewTag = exports.findTagByTitle = exports.findTagById = exports.findAllTags = void 0;
 const connection_1 = __importDefault(require("./connection"));
 const findAllTags = () => __awaiter(void 0, void 0, void 0, function* () {
-    const [rows] = yield connection_1.default.query('SELECT t.id, t.title FROM tags AS t;');
+    const [rows] = yield connection_1.default.query(`
+    SELECT
+      t.id,
+      t.title,
+      (
+        SELECT JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'id', g.id,
+            'title', g.title,
+            'description', g.description,
+            'linkName', g.link_name,
+            'linkUrl', g.link_url,
+            'images', (
+              SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                  'id', gi.id,
+                  'title', gi.title,
+                  'description', gi.description,
+                  'url', gi.url
+                )
+              )
+              FROM game_images AS gi
+              WHERE gi.game_id = g.id
+            )
+          )
+        )
+        FROM games AS g
+        INNER JOIN games_tags AS gt ON g.id = gt.game_id
+        WHERE gt.tag_id = t.id
+      ) AS games
+    FROM tags AS t;
+    `);
     return rows;
 });
 exports.findAllTags = findAllTags;
 const findTagByTitle = (titleToSearch) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const [rows] = yield connection_1.default.query(`
-      SELECT t.id, t.title
-      FROM tags as t
-      WHERE = t.title = ?;
+      SELECT
+      t.id,
+      t.title,
+      (
+        SELECT JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'id', g.id,
+            'title', g.title,
+            'description', g.description,
+            'linkName', g.link_name,
+            'linkUrl', g.link_url,
+            'images', (
+              SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                  'id', gi.id,
+                  'title', gi.title,
+                  'description', gi.description,
+                  'url', gi.url
+                )
+              )
+              FROM game_images AS gi
+              WHERE gi.game_id = g.id
+            )
+          )
+        )
+        FROM games AS g
+        INNER JOIN games_tags AS gt ON g.id = gt.game_id
+        WHERE gt.tag_id = t.id
+      ) AS games
+      FROM tags AS t
+      WHERE t.title = ?;
       `, [titleToSearch]);
         if (!rows[0] || rows.length === 0)
             return null;
@@ -38,9 +97,37 @@ exports.findTagByTitle = findTagByTitle;
 const findTagById = (idToSearch) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const [rows] = yield connection_1.default.query(`
-      SELECT t.id, t.title
-      FROM tags as t
-      WHERE = t.id = ?;
+      SELECT
+      t.id,
+      t.title,
+      (
+        SELECT JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'id', g.id,
+            'title', g.title,
+            'description', g.description,
+            'linkName', g.link_name,
+            'linkUrl', g.link_url,
+            'images', (
+              SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                  'id', gi.id,
+                  'title', gi.title,
+                  'description', gi.description,
+                  'url', gi.url
+                )
+              )
+              FROM game_images AS gi
+              WHERE gi.game_id = g.id
+            )
+          )
+        )
+        FROM games AS g
+        INNER JOIN games_tags AS gt ON g.id = gt.game_id
+        WHERE gt.tag_id = t.id
+      ) AS games
+      FROM tags AS t
+      WHERE t.id = ?;
       `, [idToSearch]);
         if (!rows[0] || rows.length === 0)
             return null;

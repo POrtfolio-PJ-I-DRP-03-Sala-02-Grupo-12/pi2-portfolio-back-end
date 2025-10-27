@@ -64,11 +64,22 @@ const createNewTag = (tag) => __awaiter(void 0, void 0, void 0, function* () {
 exports.createNewTag = createNewTag;
 const updateTag = (idToSearch, tagToUpdate) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const updatedTag = yield index_model_1.tagModel
-            .updateTag(idToSearch, tagToUpdate);
-        if (!updatedTag)
+        const tagFoundToUpdate = yield index_model_1.tagModel.findTagById(idToSearch);
+        if (!tagFoundToUpdate) {
+            return `Categoria, com o id ${idToSearch}, não encontrada para atualização.`;
+        }
+        const mergedTagData = Object.assign(Object.assign({}, tagFoundToUpdate), tagToUpdate);
+        delete mergedTagData.id;
+        const updateResult = yield index_model_1.tagModel
+            .updateTag(idToSearch, mergedTagData);
+        if (!updateResult)
             return `Não foi possível alterar os dados da categoria com o id ${idToSearch}`;
-        return updatedTag;
+        const updatedTag = yield index_model_1.tagModel
+            .findTagById(idToSearch);
+        if (!updatedTag) {
+            return `Categoria, com o id ${idToSearch}, não encontrada.`;
+        }
+        return { updateResult, updatedTag };
     }
     catch (error) {
         return `Ocorreu um erro na alteração de dados da categoria. ${error.message}`;
