@@ -3,27 +3,36 @@ import IGameImage from "../interfaces/IGameImage";
 import connection from "./connection";
 
 const findAllImages = async (): Promise<IGameImage[]> => {
+  try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection
-    .query(
-      `SELECT
-        i.id,
-        i.title,
-        i.description,
-        i.url,
-        JSON_OBJECT(
-          'id', g.id,
-          'title', g.title,
-          'tags', JSON_ARRAYAGG(DISTINCT t.title)
-        ) AS game,
-      FROM game_images AS i
-      LEFT JOIN games AS g ON i.game_id = g.id
-      LEFT JOIN game_tags AS gt ON g.id = gt.game_id
-      LEFT JOIN tags AS t ON gt.tag_id = t.id
-      GROUP BY i.id;
-      `
+      .query(
+        `SELECT
+          i.id,
+          i.title,
+          i.description,
+          i.url,
+          JSON_OBJECT(
+            'id', g.id,
+            'title', g.title,
+            'tags', JSON_ARRAYAGG(t.title)
+          ) AS game
+        FROM game_images AS i
+        LEFT JOIN games AS g ON i.game_id = g.id
+        LEFT JOIN games_tags AS gt ON g.id = gt.game_id
+        LEFT JOIN tags AS t ON gt.tag_id = t.id
+        GROUP BY
+          i.id,
+          i.title,
+          i.description,
+          i.url,
+          g.id,
+          g.title;`
     );
 
     return rows as IGameImage[];
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
 };
 
 const findImageById = async (idToSearch: number): Promise<IGameImage | null> => {
@@ -37,23 +46,28 @@ const findImageById = async (idToSearch: number): Promise<IGameImage | null> => 
         JSON_OBJECT(
           'id', g.id,
           'title', g.title,
-          'tags', JSON_ARRAYAGG(DISTINCT t.title)
-        ) AS game,
-        GROUP_CONCAT(DISTINCT t.title) AS tags,
-      FROM game_images AS i
-      LEFT JOIN games AS g ON i.game_id = g.id
-      LEFT JOIN game_tags AS gt ON g.id = gt.game_id
-      LEFT JOIN tags AS t ON gt.tag_id = t.id
-      GROUP BY i.id
-      WHERE id = ?;
+          'tags', JSON_ARRAYAGG(t.title)
+        ) AS game
+        FROM game_images AS i
+        LEFT JOIN games AS g ON i.game_id = g.id
+        LEFT JOIN games_tags AS gt ON g.id = gt.game_id
+        LEFT JOIN tags AS t ON gt.tag_id = t.id
+        WHERE i.id = ?
+        GROUP BY
+          i.id,
+          i.title,
+          i.description,
+          i.url,
+          g.id,
+          g.title;
       `,
       [idToSearch]
     );
     
     if (!rows) {
       return null;
-    }    
-
+    }
+    
     return rows[0] as IGameImage;
   } catch (error) {
     throw new Error((error as Error).message);

@@ -4,7 +4,38 @@ import connection from "./connection";
 
 const findAllTags = async ():Promise<ITag[]> => {
   const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
-    'SELECT t.id, t.title FROM tags AS t;'
+    `
+    SELECT
+      t.id,
+      t.title,
+      (
+        SELECT JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'id', g.id,
+            'title', g.title,
+            'description', g.description,
+            'linkName', g.link_name,
+            'linkUrl', g.link_url,
+            'images', (
+              SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                  'id', gi.id,
+                  'title', gi.title,
+                  'description', gi.description,
+                  'url', gi.url
+                )
+              )
+              FROM game_images AS gi
+              WHERE gi.game_id = g.id
+            )
+          )
+        )
+        FROM games AS g
+        INNER JOIN games_tags AS gt ON g.id = gt.game_id
+        WHERE gt.tag_id = t.id
+      ) AS games
+    FROM tags AS t;
+    `
   );
 
   return rows as ITag[];
@@ -14,9 +45,37 @@ const findTagByTitle = async (titleToSearch: string):Promise<ITag | null> => {
   try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `
-      SELECT t.id, t.title
-      FROM tags as t
-      WHERE = t.title = ?;
+      SELECT
+      t.id,
+      t.title,
+      (
+        SELECT JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'id', g.id,
+            'title', g.title,
+            'description', g.description,
+            'linkName', g.link_name,
+            'linkUrl', g.link_url,
+            'images', (
+              SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                  'id', gi.id,
+                  'title', gi.title,
+                  'description', gi.description,
+                  'url', gi.url
+                )
+              )
+              FROM game_images AS gi
+              WHERE gi.game_id = g.id
+            )
+          )
+        )
+        FROM games AS g
+        INNER JOIN games_tags AS gt ON g.id = gt.game_id
+        WHERE gt.tag_id = t.id
+      ) AS games
+      FROM tags AS t
+      WHERE t.title = ?;
       `,
       [titleToSearch]
     );
@@ -33,9 +92,37 @@ const findTagById = async (idToSearch: number): Promise<ITag | null> => {
   try {
     const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
       `
-      SELECT t.id, t.title
-      FROM tags as t
-      WHERE = t.id = ?;
+      SELECT
+      t.id,
+      t.title,
+      (
+        SELECT JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'id', g.id,
+            'title', g.title,
+            'description', g.description,
+            'linkName', g.link_name,
+            'linkUrl', g.link_url,
+            'images', (
+              SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                  'id', gi.id,
+                  'title', gi.title,
+                  'description', gi.description,
+                  'url', gi.url
+                )
+              )
+              FROM game_images AS gi
+              WHERE gi.game_id = g.id
+            )
+          )
+        )
+        FROM games AS g
+        INNER JOIN games_tags AS gt ON g.id = gt.game_id
+        WHERE gt.tag_id = t.id
+      ) AS games
+      FROM tags AS t
+      WHERE t.id = ?;
       `,
       [idToSearch]
     );

@@ -6,7 +6,7 @@ const findAllGamesTags = async ():Promise<IGameTag[]> => {
   const [rows]: [RowDataPacket[], FieldPacket[]] = await connection.query(
     `
     SELECT
-      gt.game_id AS game_id, gt.tag_titlte AS tag_title
+      gt.game_id AS game_id, gt.tag_id AS tag_id
     FROM games_tags AS gt;
     `,
   );
@@ -36,14 +36,12 @@ const createNewGameTag = async (gameTag: IGameTag): Promise<IGameTag | null> => 
   }
 };
 
-const deleteGameTag = async (gameTagToDelete: IGameTag): Promise<ResultSetHeader | null> => {
-try {
-    const { gameId, tagId } = gameTagToDelete;  
-
+const deleteGameTag = async (gameId: number, tagId: number): Promise<ResultSetHeader | null> => {
+  try {
     const [result]: [ResultSetHeader, FieldPacket[]] = await connection.query(
       `
       DELETE FROM games_tags
-      WHERE game_id = ?, tag_id = ?;
+      WHERE game_id = ? AND tag_id = ?;
       `,
       [gameId, tagId]
     );
