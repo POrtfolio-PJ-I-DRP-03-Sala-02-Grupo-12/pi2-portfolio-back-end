@@ -1,5 +1,5 @@
 import { ResultSetHeader } from "mysql2/promise";
-import IGameImage from "../interfaces/IGameImage";
+import IGameImage, { IGameImageUpdateResult } from "../interfaces/IGameImage";
 import { gameImageModel } from "../models/index.model";
 
 const findAllGameImages = async (): Promise<IGameImage[] | string> => {
@@ -16,6 +16,7 @@ const findAllGameImages = async (): Promise<IGameImage[] | string> => {
 
 const findGameImageById = async (idToSearch: number): Promise<IGameImage | string> => {
   try {
+    
     const gameImage: IGameImage | null = await gameImageModel.findImageById(idToSearch);
 
     if (!gameImage || gameImage === null) {
@@ -46,14 +47,31 @@ const createNewGameImage = async (gameImage: IGameImage): Promise<IGameImage | s
   }
 };
 
-const updateGameImage = async (gameImageToUpdate: IGameImage, id: number): Promise<ResultSetHeader | string> => {
+const updateGameImage = async (gameImageToUpdate: IGameImage, id: number): Promise<IGameImageUpdateResult | string> => {
   try {
-    const updatedGameImage: ResultSetHeader | null = await gameImageModel
-    .updateImage(gameImageToUpdate, id);
+    const imageFoundToUpdate: IGameImage | null = await gameImageModel.findImageById(id);
 
-    if (!updatedGameImage) return `Não foi possível alterar os dados da imagem do jogo com o id ${id}`;
-    
-    return updatedGameImage;
+    if (!imageFoundToUpdate) {
+      return `Imagem de jogo, com o id ${id}, não encontrada para atualização.`;
+    }
+
+    const mergedImageData: IGameImage = {
+      ...imageFoundToUpdate,
+      ...gameImageToUpdate,
+      gameId: imageFoundToUpdate.game?.id as number,
+    };
+    delete mergedImageData.id;
+    delete mergedImageData.game;
+
+    const updateResult: ResultSetHeader | null = await gameImageModel
+    .updateImage(mergedImageData, id);
+
+    if (!updateResult) return `Não foi possível alterar os dados da imagem do jogo com o id ${id}`;
+
+    const updatedGameImage: IGameImage | null = await gameImageModel
+      .findImageById(id);
+      
+    return { updateResult, updatedGameImage } as IGameImageUpdateResult;
   } catch (error) {
     return `Ocorreu um erro na alteração de dados da imagem do jogo. ${(error as Error).message}`;
   }
