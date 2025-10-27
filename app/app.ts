@@ -18,9 +18,9 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
     next();
 });
 
-app.use(gamesRouter);
 app.use(gameImagesRouter);
-app.use(tagsRouter);
 app.use(gamesTagsRouter);
+app.use(tagsRouter);
+app.use(gamesRouter);
 
 export default app;
