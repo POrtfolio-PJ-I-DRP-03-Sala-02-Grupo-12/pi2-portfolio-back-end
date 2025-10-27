@@ -1,5 +1,5 @@
 import { ResultSetHeader } from "mysql2/promise";
-import ITag from "../interfaces/ITag";
+import ITag, { ITagUpdateResult } from "../interfaces/ITag";
 import { tagModel } from "../models/index.model";
 
 const findAllTags = async ():Promise<ITag[] | string> => {
@@ -56,14 +56,33 @@ const createNewTag = async (tag: ITag): Promise<ITag | string> => {
   }
 };
 
-const updateTag = async (idToSearch: number, tagToUpdate: ITag):      Promise<ResultSetHeader | string> => {
+const updateTag = async (idToSearch: number, tagToUpdate: ITag):      Promise<ITagUpdateResult | string> => {
   try {
-    const updatedTag: ResultSetHeader | null = await tagModel
-    .updateTag(idToSearch, tagToUpdate);
+    const tagFoundToUpdate: ITag | null = await tagModel.findTagById(idToSearch);
 
-    if (!updatedTag) return `Não foi possível alterar os dados da categoria com o id ${idToSearch}`;
+    if (!tagFoundToUpdate) {
+      return `Categoria, com o id ${idToSearch}, não encontrada para atualização.`;
+    }
     
-    return updatedTag;
+    const mergedTagData: ITag = {
+      ...tagFoundToUpdate,
+      ...tagToUpdate,
+    };
+    delete mergedTagData.id;
+
+    const updateResult: ResultSetHeader | null = await tagModel
+    .updateTag(idToSearch, mergedTagData);
+
+    if (!updateResult) return `Não foi possível alterar os dados da categoria com o id ${idToSearch}`;
+
+    const updatedTag: ITag | null = await tagModel
+      .findTagById(idToSearch);
+
+    if (!updatedTag) {
+      return `Categoria, com o id ${idToSearch}, não encontrada.`;
+    }
+    
+    return { updateResult, updatedTag } as ITagUpdateResult;
   } catch (error) {
     return `Ocorreu um erro na alteração de dados da categoria. ${(error as Error).message}`;
   }
