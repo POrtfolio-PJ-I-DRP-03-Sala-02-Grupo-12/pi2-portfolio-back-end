@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import ITag from "../interfaces/ITag"
+import ITag, { ITagUpdateResult } from "../interfaces/ITag"
 import { tagsService } from "../services/index.services"
 import { ResultSetHeader } from "mysql2/promise";
 
@@ -78,18 +78,18 @@ const createNewTag = async (req: Request, res: Response) => {
 };
 
 const updateTag = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const tagToUpdate: ITag = req.body;
-
   try {
-    const updatedTag: ResultSetHeader | string = await tagsService
+    const { id } = req.params;
+    const tagToUpdate: ITag = req.body;
+
+    const updatedTag: ITagUpdateResult | string = await tagsService
     .updateTag(Number(id), tagToUpdate);
 
     if (typeof updatedTag === 'string') {
       return res.status(400).json({ message: updatedTag });
     }
 
-    return res.status(200).json(updatedTag);
+    return res.status(202).json(updatedTag);
   } catch (error) {
     return res.status(500)
     .json({
@@ -108,7 +108,10 @@ const deleteTag = async (req: Request, res: Response) => {
       return res.status(400).json({ message: deletedTag });
     }
 
-    return res.status(200).json(deletedTag);
+    return res.status(202).json({
+      result: deletedTag,
+      message: `Categoria, com o id ${id}, deletada com sucesso.`
+    });
   } catch (error) {
     return res.status(500)
     .json({
