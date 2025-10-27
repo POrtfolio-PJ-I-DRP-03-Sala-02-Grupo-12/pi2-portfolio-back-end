@@ -33,14 +33,14 @@ const createNewGameTag = async (gameTag: IGameTag): Promise<IGameTag | string> =
   }
 };
 
-const deleteGameTag = async (gameTagToDelete: IGameTag): Promise<ResultSetHeader | string> => {
+const deleteGameTag = async (gameId: number, tagId: number): Promise<ResultSetHeader | string> => {
   try {
-    const deletedGameTag: ResultSetHeader | null = await gameTagModel.deleteGameTag(gameTagToDelete);
+    const deletedGameTag: ResultSetHeader | null = await gameTagModel.deleteGameTag(gameId, tagId);
 
     if (!deletedGameTag) {
       return `Não foi possível deletar a associação da categoria ao jogo com os seguintes dados:
-        gameId: ${gameTagToDelete.gameId}
-        tagId: ${gameTagToDelete.tagId}
+        gameId: ${gameId}
+        tagId: ${tagId}
       `;
     }
 
