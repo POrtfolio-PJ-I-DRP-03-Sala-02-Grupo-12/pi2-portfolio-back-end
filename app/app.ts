@@ -18,6 +18,10 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
     next();
 });
 
+app.get('/', (_req: Request, res: Response, _next: NextFunction) => {
+    res.status(200).send("Boas vindas à Gabisou.");
+});
+
 app.use(gameImagesRouter);
 app.use(gamesTagsRouter);
 app.use(tagsRouter);
