@@ -14,6 +14,9 @@ app.use((req, _res, next) => {
     req.db = connection_1.default;
     next();
 });
+app.get('/', (_req, res, _next) => {
+    res.status(200).send("Boas vindas à Gabisou.");
+});
 app.use(index_routes_1.gameImagesRouter);
 app.use(index_routes_1.gamesTagsRouter);
 app.use(index_routes_1.tagsRouter);

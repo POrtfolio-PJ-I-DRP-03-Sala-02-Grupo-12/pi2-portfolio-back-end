@@ -14,8 +14,9 @@ const index_model_1 = require("../models/index.model");
 const findAllTags = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const tagsList = yield index_model_1.tagModel.findAllTags();
-        if (!tagsList)
+        if (!tagsList || tagsList.length === 0) {
             return 'Não encontramos categorias cadastradas.';
+        }
         return tagsList;
     }
     catch (error) {

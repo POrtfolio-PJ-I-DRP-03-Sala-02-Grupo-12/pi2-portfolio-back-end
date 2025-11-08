@@ -5,17 +5,50 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv");
 const promise_1 = __importDefault(require("mysql2/promise"));
-const connection = promise_1.default.createPool({
-    uri: process.env.DATABASE_URL,
+const NODE_ENV = process.env.NODE_ENV || "development";
+let connection = promise_1.default.createPool({
+    uri: process.env.LOCALHOST_URL,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
 });
-connection.getConnection()
-    .then(() => {
-    console.log('Conectado ao banco de dados no Railway');
-})
-    .catch((error) => {
-    console.error('Erro ao conectar com o banco:', error.message);
-});
+if (NODE_ENV === "development") {
+    connection.getConnection()
+        .then(() => {
+        console.log('Conectado ao banco de dados no ambiente de desenvolvimento.');
+    })
+        .catch((error) => {
+        console.error('Erro ao conectar com o banco:', error.message);
+    });
+}
+if (NODE_ENV === "production") {
+    connection = promise_1.default.createPool({
+        uri: process.env.DATABASE_URL,
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0
+    });
+    connection.getConnection()
+        .then(() => {
+        console.log('Conectado ao banco de dados no Railway');
+    })
+        .catch((error) => {
+        console.error('Erro ao conectar com o banco:', error.message);
+    });
+}
+if (NODE_ENV === "tests") {
+    connection = promise_1.default.createPool({
+        uri: process.env.TESTS_DB_URL,
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0
+    });
+    connection.getConnection()
+        .then(() => {
+        console.log('Conectado ao banco de dados no ambiente de testes.');
+    })
+        .catch((error) => {
+        console.error('Erro ao conectar com o banco:', error.message);
+    });
+}
 exports.default = connection;
