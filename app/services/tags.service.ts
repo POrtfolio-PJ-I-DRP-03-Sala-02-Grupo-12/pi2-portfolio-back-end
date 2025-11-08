@@ -6,7 +6,9 @@ const findAllTags = async ():Promise<ITag[] | string> => {
   try{ 
     const tagsList: ITag[] | null = await tagModel.findAllTags();
 
-    if (!tagsList) return 'Não encontramos categorias cadastradas.';
+    if (!tagsList || tagsList.length === 0) {
+      return 'Não encontramos categorias cadastradas.';
+    }
 
     return tagsList;
   } catch (error) {
