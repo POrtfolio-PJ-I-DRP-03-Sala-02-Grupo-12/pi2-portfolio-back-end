@@ -169,4 +169,18 @@ describe('TESTES DO SERVIÇO GAMES', ()=> {
       });
     });
   });
+
+  describe('Em caso de problemas na requisição:', () => {
+    it('Deve retornar uma mensagem de erro', async () => {
+      (gameModel.createNewGame as jest.Mock)
+        .mockRejectedValue(mockError);
+
+      const result = await createNewGame(mockGame);
+
+      expect(gameModel.createNewGame).toHaveBeenCalledTimes(1);
+      expect(result)
+        .toContain('Ocorreu um erro no registro de novo jogo:');
+      expect(result).toContain(errorMessage);
+    });
+  });
 });
