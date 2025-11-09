@@ -10,27 +10,39 @@ export const mockGame = {
     linkUrl: 'https://example.com/jogo1',
 } as IGame;
 
+export const mockGame1ToInsert = {
+    title: 'Jogo para Teste 1',
+    description: 'Descrição do jogo para teste 1',
+    linkName: 'Link Jogo para teste 1',
+    linkUrl: 'https://example.com/jogo1',
+} as IGame;
+
+export const mockGame2ToInsert = {
+    title: 'Jogo para Teste 2',
+    description: 'Descrição do jogo para teste 2',
+    linkName: 'Link Jogo para teste 2',
+    linkUrl: 'https://example.com/jogo2',
+} as IGame;
+
+export const mockGame3ToInsert = {
+    title: 'Jogo para Teste 3',
+    description: 'Descrição do jogo para teste 3',
+    linkName: 'Link Jogo para teste 3',
+    linkUrl: 'https://example.com/jogo3',
+} as IGame;
+
 export const mockGamesList = [
   {
     id: 1,
-    title: 'Jogo para Teste 1',
-    description: 'Descrição do jogo 1',
-    linkName: 'Link Jogo 1',
-    linkUrl: 'https://example.com/jogo1',
+    ...mockGame1ToInsert
   },
   {
     id: 2,
-    title: 'Jogo para Teste 2',
-    description: 'Descrição do jogo 2',
-    linkName: 'Link Jogo 2',
-    linkUrl: 'https://example.com/jogo2',
+    ...mockGame2ToInsert
   },
   {
     id: 3,
-    title: 'Jogo para Teste 3',
-    description: 'Descrição do jogo 3',
-    linkName: 'Link Jogo 3',
-    linkUrl: 'https://example.com/jogo3',
+    ...mockGame3ToInsert
   },
 ] as IGame[];
 
