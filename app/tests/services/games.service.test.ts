@@ -155,5 +155,18 @@ describe('TESTES DO SERVIÇO GAMES', ()=> {
         expect(result).toContain(incompleteGameData.linkUrl);
       });
     });
+
+    describe('Com os dados corretos enviados', () => {
+      it('Deve retornar um objeto com um ID', async () => {
+        (gameModel.createNewGame as jest.Mock)
+          .mockResolvedValue(mockGame);
+        
+        const result = await createNewGame(mockGame1ToInsert);
+
+        expect(gameModel.createNewGame).toHaveBeenCalledTimes(1);
+        expect(gameModel.createNewGame).toHaveBeenCalledWith(mockGame1ToInsert);
+        expect(result).toEqual(mockGame);
+      });
+    });
   });
 });
