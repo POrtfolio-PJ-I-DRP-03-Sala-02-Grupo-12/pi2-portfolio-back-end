@@ -2,13 +2,16 @@ jest.mock('../../models/index.model', () => ({
   gameModel: {
     findAllGames: jest.fn(),
     findGameById: jest.fn(),
+    createNewGame: jest.fn(),
   }
 }));
 
+import IGame from "../../interfaces/IGame";
 import {
   gameModel,
 } from "../../models/index.model";  
 import {
+  createNewGame,
   findAllGames,
   findGameById,
 } from "../../services/games.service";  
@@ -125,6 +128,31 @@ describe('TESTES DO SERVIÇO GAMES', ()=> {
         expect(gameModel.findGameById).toHaveBeenCalledTimes(1);
         expect(result).toContain('Ocorreu um erro na busca:');
         expect(result).toContain(invalidIdErrorMessage);
+      });
+    });
+  });
+
+  describe('CADASTRAR UM NOVO JOGO', () => {
+    describe('Caso não consiga cadastrar um novo jogo', () => {
+      const incompleteGameData = {
+        description: "Jogo incompleto para cadastrar",
+        linkName: "Jogo Incompleto",
+        linkUrl: "https://example.com/jogo-incompleto"
+      };
+
+      it('Deve retornar uma mensagem e os dados enviados', async () => {
+        (gameModel.createNewGame as jest.Mock)
+          .mockResolvedValue(null);
+
+        const result = await createNewGame(incompleteGameData as unknown as IGame);
+
+        expect(gameModel.createNewGame).toHaveBeenCalledTimes(1);
+        expect(gameModel.createNewGame).toHaveBeenCalledWith(incompleteGameData);
+        expect(result)
+          .toContain('Não foi possível cadastrar o jogo com os seguintes dados:');
+        expect(result).toContain(incompleteGameData.description);
+        expect(result).toContain(incompleteGameData.linkName);
+        expect(result).toContain(incompleteGameData.linkUrl);
       });
     });
   });
