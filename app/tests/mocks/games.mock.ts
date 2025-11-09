@@ -5,8 +5,8 @@ import IGameTag from "../../interfaces/IGameTag";
 export const mockGame = {
     id: 1,
     title: 'Jogo para Teste 1',
-    description: 'Descrição do jogo 1',
-    linkName: 'Link Jogo 1',
+    description: 'Descrição do jogo para teste 1',
+    linkName: 'Link Jogo para teste 1',
     linkUrl: 'https://example.com/jogo1',
 } as IGame;
 
