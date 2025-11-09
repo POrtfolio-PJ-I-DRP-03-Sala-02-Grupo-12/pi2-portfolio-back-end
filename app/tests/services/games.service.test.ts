@@ -14,12 +14,14 @@ import {
 } from "../../services/games.service";  
 import {
   errorMessage,
+  invalidIdErrorMessage,
   mockError,
   mockGame,
   mockGame1ToInsert,
   mockGame2ToInsert,
   mockGame3ToInsert,
-  mockGamesList
+  mockGamesList,
+  mockInvalidIdError
 } from "../mocks/games.mock";
 
 describe('TESTES DO SERVIÇO GAMES', ()=> {
@@ -27,7 +29,7 @@ describe('TESTES DO SERVIÇO GAMES', ()=> {
     jest.clearAllMocks();
   });
 
-  describe('Ao executar a função findAllGames', () => {
+  describe('LISTAR JOGOS', () => {
     describe('Caso não haja jogos cadastrados:', () => {
       it('Deve mostrar uma mensagem de lista vazia', async () => {
         const messageShouldBeReturned = "Não encontramos jogos cadastrados.";
@@ -76,7 +78,7 @@ describe('TESTES DO SERVIÇO GAMES', ()=> {
     });
   });
 
-  describe('Ao executar a função findGameById', () => {
+  describe('BUSCAR UM JOGO POR ID', () => {
     describe('Informando um ID que não existe', () => {
       const nonExistentId = 0;
       const messageToBeReturned = `Não conseguimos encontrar o jogo pelo id ${nonExistentId}`;
@@ -110,6 +112,19 @@ describe('TESTES DO SERVIÇO GAMES', ()=> {
           expect(result.title).toEqual(mockGame.title);
         }
         expect(result).toEqual(mockGame);
+      });
+    });
+
+    describe('Em caso de problemas na requisição:', () => {
+      it('Deve retornar uma mensagem de erro', async () => {
+        (gameModel.findGameById as jest.Mock)
+          .mockRejectedValue(mockInvalidIdError);
+        
+        const result = await findGameById(Number('AB001'));
+
+        expect(gameModel.findGameById).toHaveBeenCalledTimes(1);
+        expect(result).toContain('Ocorreu um erro na busca:');
+        expect(result).toContain(invalidIdErrorMessage);
       });
     });
   });
