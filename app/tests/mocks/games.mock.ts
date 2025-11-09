@@ -113,6 +113,9 @@ export const mockGameResult =
     ]
   };
 
+export const errorMessage = 'Table gabisou_db_test.games doesn\'t exist';
+export const mockError = new Error(errorMessage);
+
 export const mockCreateGameQuery = `INSERT INTO games (title, description, link_name, link_url)
         VALUES (?, ?, ?, ?);
       `;
