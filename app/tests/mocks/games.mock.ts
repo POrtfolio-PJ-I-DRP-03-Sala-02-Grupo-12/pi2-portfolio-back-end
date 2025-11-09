@@ -116,6 +116,9 @@ export const mockGameResult =
 export const errorMessage = 'Table gabisou_db_test.games doesn\'t exist';
 export const mockError = new Error(errorMessage);
 
+export const invalidIdErrorMessage = 'Unknown column \'NaN\' in \'where\' clause';
+export const mockInvalidIdError = new Error(invalidIdErrorMessage);
+
 export const mockCreateGameQuery = `INSERT INTO games (title, description, link_name, link_url)
         VALUES (?, ?, ?, ?);
       `;
