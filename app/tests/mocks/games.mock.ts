@@ -31,6 +31,10 @@ export const mockGame3ToInsert = {
     linkUrl: 'https://example.com/jogo3',
 } as IGame;
 
+export const mockGameToUpdate = {
+  description: 'Descrição do jogo para teste 1 alterada',
+} as IGame;
+
 export const mockGamesList = [
   {
     id: 1,
