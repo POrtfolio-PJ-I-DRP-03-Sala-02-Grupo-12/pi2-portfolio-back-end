@@ -3,6 +3,7 @@ jest.mock('../../models/index.model', () => ({
     findAllGames: jest.fn(),
     findGameById: jest.fn(),
     createNewGame: jest.fn(),
+    updateGame: jest.fn(),
   }
 }));
 
@@ -14,6 +15,7 @@ import {
   createNewGame,
   findAllGames,
   findGameById,
+  updateGame,
 } from "../../services/games.service";  
 import {
   errorMessage,
@@ -24,6 +26,7 @@ import {
   mockGame2ToInsert,
   mockGame3ToInsert,
   mockGamesList,
+  mockGameToUpdate,
   mockInvalidIdError
 } from "../mocks/games.mock";
 
@@ -168,19 +171,69 @@ describe('TESTES DO SERVIÇO GAMES', ()=> {
         expect(result).toEqual(mockGame);
       });
     });
+  
+    describe('Em caso de problemas na requisição:', () => {
+      it('Deve retornar uma mensagem de erro', async () => {
+        (gameModel.createNewGame as jest.Mock)
+          .mockRejectedValue(mockError);
+  
+        const result = await createNewGame(mockGame);
+  
+        expect(gameModel.createNewGame).toHaveBeenCalledTimes(1);
+        expect(result)
+          .toContain('Ocorreu um erro no registro de novo jogo:');
+        expect(result).toContain(errorMessage);
+      });
+    });
   });
 
-  describe('Em caso de problemas na requisição:', () => {
-    it('Deve retornar uma mensagem de erro', async () => {
-      (gameModel.createNewGame as jest.Mock)
-        .mockRejectedValue(mockError);
+  describe('ALTERAR OS DADOS DE UM JOGO', () => {
+    describe('Caso não consiga encontrar o jogo', () => {
+      const nonExistentId = 99999999999;
 
-      const result = await createNewGame(mockGame);
+      it('Deve retornar mensagem de "não encontrado"', async () => {
+        (gameModel.findGameById as jest.Mock)
+          .mockResolvedValue(null);
 
-      expect(gameModel.createNewGame).toHaveBeenCalledTimes(1);
-      expect(result)
-        .toContain('Ocorreu um erro no registro de novo jogo:');
-      expect(result).toContain(errorMessage);
+        const result = await updateGame(mockGameToUpdate, nonExistentId);
+
+        expect(gameModel.findGameById).toHaveBeenCalledTimes(1);
+        expect(result).toContain("Jogo com o id");
+        expect(result).toContain("não encontrado para atualização.");
+      });
+
+      it('E a mensagem deve conter o ID procurado', async () => {
+        (gameModel.findGameById as jest.Mock)
+          .mockResolvedValue(null);
+
+        const result = await updateGame(mockGameToUpdate, nonExistentId);
+
+        expect(gameModel.findGameById).toHaveBeenCalledTimes(1);
+        expect(result).toContain(`${nonExistentId}`);
+      });
+    });
+
+    describe('Caso não consiga realizar a alteração solicitada', () => {
+      const emptyPayload = {} as IGame;
+      const existentId = 1;
+
+      it('Deve retornar mensagem de impossibilidade de alteração', async () => {
+        (gameModel.findGameById as jest.Mock)
+          .mockResolvedValue(mockGame);
+        (gameModel.updateGame as jest.Mock)
+          .mockResolvedValue(null);
+
+        const result = await updateGame(emptyPayload, existentId);
+
+        expect(gameModel.findGameById).toHaveBeenCalledTimes(1);
+        expect(gameModel.updateGame).toHaveBeenCalledTimes(1);
+        expect(result).toContain('Não foi possível alterar os dados do jogo');
+        expect(result).toContain(`com o id ${existentId}`);
+        // Muito provavelmente, este é um falso positivo!!!
+        // Corrigir a lógica da função para prever o envio de objeto vazio e
+        // solicitar que se envie dados ou
+        // devolver avisando que não tem o que alterar
+      });
     });
   });
 });
