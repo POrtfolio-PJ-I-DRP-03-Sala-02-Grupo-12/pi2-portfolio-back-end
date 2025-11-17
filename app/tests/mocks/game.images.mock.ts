@@ -99,3 +99,10 @@ export const mockGameImagesList = [
   mockGameImage2,
   mockGameImage3,
 ] as IGameImage[];
+
+export const mockGameImageWithInvalidColumnName = {
+  desscription: "Tentativa de alterar imagem com nome inválido de campo",
+} as unknown as IGameImage;
+
+export const mockUpdateErrorMessage =
+  'Unknown column \'desscription\' in \'field list\'';
