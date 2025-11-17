@@ -17,6 +17,11 @@ export const mockNewGameImage = {
   gameId: 1,
 } as IGameImage;
 
+export const mockGameImage1 = {
+  id: 1,
+  ...mockNewGameImage,
+} as IGameImage;
+
 export const mockGameImagesForGameSearch = [
   {
     id: 1,
