@@ -7,22 +7,27 @@ jest.mock('../../models/index.model', () => ({
   }
 }));
 
+import IGameImage from "../../interfaces/IGameImage";
 import {
   gameImageModel,
 } from "../../models/index.model";  
 import {
+  createNewGameImage,
   findAllGameImages,
   findGameImageById,
 } from "../../services/game.images.service";  
 import {
+  mockGameImage1,
   mockGameImage2,
   mockGameImage3,
-  mockGameImagesList
+  mockGameImagesList,
+  mockNewGameImage
 } from "../mocks/game.images.mock";
 import {
   errorMessage,
   invalidIdErrorMessage,
   mockError,
+  mockGame,
   mockInvalidIdError
 } from "../mocks/games.mock";
 
@@ -130,6 +135,66 @@ describe('TESTES DO SERVIÇO GAME IMAGES', () => {
         expect(gameImageModel.findImageById).toHaveBeenCalledTimes(1);
         expect(result).toContain('Ocorreu um erro na busca:');
         expect(result).toContain(invalidIdErrorMessage);
+      });
+    });
+  });
+
+  describe('CADASTRAR UMA NOVA IMAGEM', () => {
+    describe('Caso não consiga cadastrar uma nova imagem', () => {
+      const incompleteGameImageData = {
+        title: "Imagem Incompleta para Teste",
+        description: "Imagem incompleta para cadastrar",
+        gameId: 1
+      };
+
+      it('Deve retornar uma mensagem e os dados enviados', async () => {
+        (gameImageModel.createNewImage as jest.Mock)
+          .mockResolvedValue(null);
+
+        const result =
+          await createNewGameImage(
+            incompleteGameImageData as unknown as IGameImage
+          );
+
+        expect(gameImageModel.createNewImage).toHaveBeenCalledTimes(1);
+        expect(gameImageModel.createNewImage)
+          .toHaveBeenCalledWith(incompleteGameImageData);
+        expect(result)
+          .toContain(
+            'Não foi possível cadastrar a imagem do jogo' +
+            ' com os seguintes dados:'
+          );
+        expect(result).toContain(incompleteGameImageData.title);
+        expect(result).toContain(incompleteGameImageData.description);
+        expect(result).toContain(`${incompleteGameImageData.gameId}`);
+      });
+    });
+
+    describe('Com os dados corretos enviados', () => {
+      it('Deve retornar um objeto com um ID', async () => {
+        (gameImageModel.createNewImage as jest.Mock)
+          .mockResolvedValue(mockGameImage1);
+        
+        const result = await createNewGameImage(mockNewGameImage);
+
+        expect(gameImageModel.createNewImage).toHaveBeenCalledTimes(1);
+        expect(gameImageModel.createNewImage)
+          .toHaveBeenCalledWith(mockNewGameImage);
+        expect(result).toEqual(mockGameImage1);
+      });
+    });
+  
+    describe('Em caso de problemas na requisição:', () => {
+      it('Deve retornar uma mensagem de erro', async () => {
+        (gameImageModel.createNewImage as jest.Mock)
+          .mockRejectedValue(mockError);
+  
+        const result = await createNewGameImage(mockNewGameImage);
+  
+        expect(gameImageModel.createNewImage).toHaveBeenCalledTimes(1);
+        expect(result)
+          .toContain('Ocorreu um erro no registro de nova imagem de jogo:');
+        expect(result).toContain(errorMessage);
       });
     });
   });
