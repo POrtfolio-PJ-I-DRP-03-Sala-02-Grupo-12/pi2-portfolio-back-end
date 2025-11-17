@@ -35,9 +35,10 @@ const createNewGameImage = async (gameImage: IGameImage): Promise<IGameImage | s
 
     if (!newGameImage || !newGameImage.id || newGameImage === null) {
       return `Não foi possível cadastrar a imagem do jogo com os seguintes dados:
-        jogoId: ${gameImage.gameId}
-        url: ${gameImage.url}
+        título: ${gameImage.title}
         descrição: ${gameImage.description}
+        url: ${gameImage.url}
+        gameId: ${gameImage.gameId}
       `;
     }
 
