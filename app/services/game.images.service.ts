@@ -68,11 +68,8 @@ const updateGameImage = async (gameImageToUpdate: IGameImage, id: number): Promi
     .updateImage(mergedImageData, id);
 
     if (!updateResult) return `Não foi possível alterar os dados da imagem do jogo com o id ${id}`;
-
-    const updatedGameImage: IGameImage | null = await gameImageModel
-      .findImageById(id);
-      
-    return { updateResult, updatedGameImage } as IGameImageUpdateResult;
+  
+    return updateResult as unknown as IGameImageUpdateResult;
   } catch (error) {
     return `Ocorreu um erro na alteração de dados da imagem do jogo. ${(error as Error).message}`;
   }
