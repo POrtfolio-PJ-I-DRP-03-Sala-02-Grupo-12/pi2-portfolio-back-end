@@ -64,10 +64,8 @@ const updateGame = async (gameToUpdate: IGame, id: number): Promise<IGameUpdateR
     .updateGame(mergedGameData, id);
 
     if (!updateResult) return `Não foi possível alterar os dados do jogo com o id ${id}`;
-
-    const updatedGame: IGame | null = await gameModel.findGameById(id);
     
-    return {updateResult, updatedGame} as IGameUpdateResult;
+    return updateResult as unknown as IGameUpdateResult;
   } catch (error) {
     return `Ocorreu um erro na alteração de dados do jogo: ${(error as Error).message}`;
   }
