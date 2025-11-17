@@ -15,20 +15,26 @@ import {
   createNewGameImage,
   findAllGameImages,
   findGameImageById,
+  updateGameImage,
 } from "../../services/game.images.service";  
 import {
   mockGameImage1,
   mockGameImage2,
   mockGameImage3,
   mockGameImagesList,
-  mockNewGameImage
+  mockGameImageToUpdate,
+  mockGameImageUpdated,
+  mockGameImageWithInvalidColumnName,
+  mockNewGameImage,
+  mockResultSetHeader,
+  mockUpdateErrorMessage
 } from "../mocks/game.images.mock";
 import {
   errorMessage,
   invalidIdErrorMessage,
   mockError,
-  mockGame,
-  mockInvalidIdError
+  mockInvalidIdError,
+  mockUpdateError
 } from "../mocks/games.mock";
 
 describe('TESTES DO SERVIÇO GAME IMAGES', () => {
@@ -195,6 +201,97 @@ describe('TESTES DO SERVIÇO GAME IMAGES', () => {
         expect(result)
           .toContain('Ocorreu um erro no registro de nova imagem de jogo:');
         expect(result).toContain(errorMessage);
+      });
+    });
+  });
+
+  describe('ALTERAR OS DADOS DE UMA IMAGEM', () => {
+    describe('Caso não consiga encontrar a imagem', () => {
+      const nonExistentId = 99999999999;
+
+      it('Deve retornar mensagem de "não encontrado"', async () => {
+        (gameImageModel.findImageById as jest.Mock)
+          .mockResolvedValue(null);
+
+        const result = await updateGameImage(mockGameImageToUpdate, nonExistentId);
+
+        expect(gameImageModel.findImageById).toHaveBeenCalledTimes(1);
+        expect(result).toContain(`Imagem de jogo, com o id ${nonExistentId}`);
+        expect(result).toContain("não encontrada para atualização.");
+      });
+
+      it('E a mensagem deve conter o ID procurado', async () => {
+        (gameImageModel.findImageById as jest.Mock)
+          .mockResolvedValue(null);
+
+        const result = await updateGameImage(mockGameImageToUpdate, nonExistentId);
+
+        expect(gameImageModel.findImageById).toHaveBeenCalledTimes(1);
+        expect(result).toContain(`${nonExistentId}`);
+      });
+    });
+
+    describe('Caso não consiga realizar a alteração solicitada', () => {
+      const emptyPayload = {} as IGameImage;
+      const existentId = 1;
+
+      it('Deve retornar mensagem de impossibilidade de alteração', async () => {
+        (gameImageModel.findImageById as jest.Mock)
+          .mockResolvedValue(mockGameImage1);
+        (gameImageModel.updateImage as jest.Mock)
+          .mockResolvedValue(null);
+
+        const result = await updateGameImage(emptyPayload, existentId);
+
+        expect(gameImageModel.findImageById).toHaveBeenCalledTimes(1);
+        expect(gameImageModel.updateImage).toHaveBeenCalledTimes(1);
+        expect(result)
+          .toContain('Não foi possível alterar os dados da imagem do jogo');
+        expect(result).toContain(`com o id ${existentId}`);
+        // Muito provavelmente, este é um falso positivo!!!
+        // Corrigir a lógica da função para prever o envio de objeto vazio e
+        // solicitar que se envie dados ou
+        // devolver avisando que não tem o que alterar
+      });
+    });
+
+    describe('Caso sejam enviados os dados corretamente para alteração', () => {
+      it('Retornar um breve relato do banco de dados', async () => {
+        (gameImageModel.updateImage as jest.Mock)
+          .mockResolvedValue({
+            updateResult: mockResultSetHeader,
+            updatedGameImage: mockGameImageUpdated,
+          });
+        
+        const result = await updateGameImage(mockGameImageToUpdate, 1);
+
+        expect(gameImageModel.updateImage).toHaveBeenCalledTimes(1);
+        expect(typeof result).not.toBe('string');
+        if (typeof result !== 'string') {
+          expect(result).toHaveProperty('updateResult');
+          expect(result).toHaveProperty('updatedGameImage');
+          expect(result.updateResult).toEqual(mockResultSetHeader);
+          expect(result.updatedGameImage).toEqual(mockGameImageUpdated);
+        }
+      });
+    });
+
+    describe('Em caso de problemas na requisição:', () => {
+      it('Deve retornar uma mensagem de erro', async () => {
+        (gameImageModel.updateImage as jest.Mock)
+          .mockRejectedValue(mockUpdateError);
+  
+        const result = await updateGameImage(
+          mockGameImageWithInvalidColumnName,
+          1
+        );
+  
+        expect(gameImageModel.updateImage).toHaveBeenCalledTimes(1);
+        expect(result)
+          .toContain('Ocorreu um erro na alteração de');
+        expect(result)
+          .toContain('dados da imagem do jogo.');
+        expect(result).toContain(mockUpdateErrorMessage);
       });
     });
   });
