@@ -78,8 +78,6 @@ const deleteGame = async (id: number): Promise<ResultSetHeader | string> => {
     if (!excludedGame) {
       return `Não foi possível excluir dados do jogo com o id ${id}`;
     }
-
-    console.log(excludedGame);
     
     return excludedGame;
   } catch (error) {
