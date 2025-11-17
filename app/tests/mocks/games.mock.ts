@@ -35,6 +35,11 @@ export const mockGameToUpdate = {
   description: 'Descrição do jogo para teste 1 alterada',
 } as IGame;
 
+export const mockUpdatedGame: IGame = {
+  ...mockGame,
+  description: mockGameToUpdate.description,
+};
+
 export const mockGamesList = [
   {
     id: 1,
@@ -116,6 +121,15 @@ export const mockGameResult =
       { id: 3, title: 'Categoria TST 3' }
     ]
   };
+
+export const mockGameWithInvalidColumnName = {
+  desscription: "Tentativa de alterar jogo com nome inválido de campo",
+} as unknown as IGame;
+
+export const mockUpdateErrorMessage =
+  'Unknown column \'desscription\' in \'field list\'';
+
+export const mockUpdateError = new Error(mockUpdateErrorMessage);
 
 export const errorMessage = 'Table gabisou_db_test.games doesn\'t exist';
 export const mockError = new Error(errorMessage);
