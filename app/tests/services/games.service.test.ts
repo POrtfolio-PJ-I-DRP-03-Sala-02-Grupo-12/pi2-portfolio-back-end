@@ -27,7 +27,12 @@ import {
   mockGame3ToInsert,
   mockGamesList,
   mockGameToUpdate,
-  mockInvalidIdError
+  mockGameWithInvalidColumnName,
+  mockInvalidIdError,
+  mockResultSetHeader,
+  mockUpdatedGame,
+  mockUpdateError,
+  mockUpdateErrorMessage
 } from "../mocks/games.mock";
 
 describe('TESTES DO SERVIÇO GAMES', ()=> {
@@ -235,5 +240,46 @@ describe('TESTES DO SERVIÇO GAMES', ()=> {
         // devolver avisando que não tem o que alterar
       });
     });
+
+    describe('Caso sejam enviados os dados corretamente para alteração', () => {
+      it('Retornar um breve relato do banco de dados', async () => {
+        (gameModel.updateGame as jest.Mock)
+          .mockResolvedValue({
+            updateResult: mockResultSetHeader,
+            updatedGame: mockUpdatedGame,
+          });
+        
+        const result = await updateGame(mockGameToUpdate, 1);
+
+        expect(gameModel.updateGame).toHaveBeenCalledTimes(1);
+        expect(typeof result).not.toBe('string');
+        if (typeof result !== 'string') {
+          expect(result).toHaveProperty('updateResult');
+          expect(result).toHaveProperty('updatedGame');
+          expect(result.updateResult).toEqual(mockResultSetHeader);
+          expect(result.updatedGame).toEqual(mockUpdatedGame);
+        }
+      });
+    });
+
+    describe('Em caso de problemas na requisição:', () => {
+      it('Deve retornar uma mensagem de erro', async () => {
+        (gameModel.updateGame as jest.Mock)
+          .mockRejectedValue(mockUpdateError);
+  
+        const result = await updateGame(mockGameWithInvalidColumnName, 1);
+  
+        expect(gameModel.updateGame).toHaveBeenCalledTimes(1);
+        expect(result)
+          .toContain('Ocorreu um erro na alteração de');
+        expect(result)
+          .toContain('dados do jogo:');
+        expect(result).toContain(mockUpdateErrorMessage);
+      });
+    });
+  });
+
+  describe('EXCLUIR UM JOGO DO BANCO DE DADOS', () => {
+
   });
 });
