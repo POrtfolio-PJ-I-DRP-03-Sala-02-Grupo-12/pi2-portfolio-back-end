@@ -4,6 +4,7 @@ jest.mock('../../models/index.model', () => ({
     findGameById: jest.fn(),
     createNewGame: jest.fn(),
     updateGame: jest.fn(),
+    deleteGame: jest.fn(),
   }
 }));
 
@@ -13,6 +14,7 @@ import {
 } from "../../models/index.model";  
 import {
   createNewGame,
+  deleteGame,
   findAllGames,
   findGameById,
   updateGame,
@@ -280,6 +282,47 @@ describe('TESTES DO SERVIÇO GAMES', ()=> {
   });
 
   describe('EXCLUIR UM JOGO DO BANCO DE DADOS', () => {
+    describe('Caso não consiga excluir o jogo', () => {
+      const nonExistentId = 99999999999;
 
+      it('Deve retornar mensagem de impossibilidade de exclusão', async () => {
+        (gameModel.deleteGame as jest.Mock)
+          .mockResolvedValue(null);
+          
+        const result = await deleteGame(nonExistentId);
+
+        expect(gameModel.deleteGame).toHaveBeenCalledTimes(1);
+        expect(result).toContain('Não foi possível excluir dados do jogo');
+        expect(result).toContain(`com o id ${nonExistentId}`);
+      });
+    });
+
+    describe('Caso consiga excluir o jogo', () => {
+      const existentId = 1;
+
+      it('Deve retornar um breve relato do banco de dados', async () => {
+        (gameModel.deleteGame as jest.Mock)
+          .mockResolvedValue(mockResultSetHeader);
+        
+        const result = await deleteGame(existentId);
+
+        expect(gameModel.deleteGame).toHaveBeenCalledTimes(1);
+        expect(result).toEqual(mockResultSetHeader);
+      });
+    });
+
+    describe('Em caso de problemas na requisição:', () => {
+      it('Deve retornar uma mensagem de erro', async () => {
+        (gameModel.deleteGame as jest.Mock)
+          .mockRejectedValue(mockError);
+  
+        const result = await deleteGame(1);
+  
+        expect(gameModel.deleteGame).toHaveBeenCalledTimes(1);
+        expect(result)
+          .toContain('Ocorreu um erro ao tentar excluir o jogo do banco de dados:');
+        expect(result).toContain(errorMessage);
+      });
+    });
   });
 });
