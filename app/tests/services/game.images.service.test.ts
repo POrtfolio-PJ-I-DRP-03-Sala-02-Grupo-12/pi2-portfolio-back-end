@@ -4,6 +4,7 @@ jest.mock('../../models/index.model', () => ({
     findImageById: jest.fn(),
     createNewImage: jest.fn(),
     updateImage: jest.fn(),
+    deleteImage: jest.fn(),
   }
 }));
 
@@ -13,6 +14,7 @@ import {
 } from "../../models/index.model";  
 import {
   createNewGameImage,
+  deleteGameImage,
   findAllGameImages,
   findGameImageById,
   updateGameImage,
@@ -292,6 +294,51 @@ describe('TESTES DO SERVIÇO GAME IMAGES', () => {
         expect(result)
           .toContain('dados da imagem do jogo.');
         expect(result).toContain(mockUpdateErrorMessage);
+      });
+    });
+  });
+
+  describe('EXCLUIR UMA IMAGEM DE JOGO DO BANCO DE DADOS', () => {
+    describe('Caso não consiga excluir a imagem', () => {
+      const nonExistentId = 99999999999;
+
+      it('Deve retornar mensagem de impossibilidade de exclusão', async () => {
+        (gameImageModel.deleteImage as jest.Mock)
+          .mockResolvedValue(null);
+          
+        const result = await deleteGameImage(nonExistentId);
+
+        expect(gameImageModel.deleteImage).toHaveBeenCalledTimes(1);
+        expect(result).toContain('Não foi possível deletar a imagem do jogo');
+        expect(result).toContain(`com o id ${nonExistentId}`);
+      });
+    });
+
+    describe('Caso consiga excluir a imagem', () => {
+      const existentId = 1;
+
+      it('Deve retornar um breve relato do banco de dados', async () => {
+        (gameImageModel.deleteImage as jest.Mock)
+          .mockResolvedValue(mockResultSetHeader);
+        
+        const result = await deleteGameImage(existentId);
+
+        expect(gameImageModel.deleteImage).toHaveBeenCalledTimes(1);
+        expect(result).toEqual(mockResultSetHeader);
+      });
+    });
+
+    describe('Em caso de problemas na requisição:', () => {
+      it('Deve retornar uma mensagem de erro', async () => {
+        (gameImageModel.deleteImage as jest.Mock)
+          .mockRejectedValue(mockError);
+  
+        const result = await deleteGameImage(1);
+  
+        expect(gameImageModel.deleteImage).toHaveBeenCalledTimes(1);
+        expect(result)
+          .toContain('Ocorreu um erro na exclusão da imagem do jogo.');
+        expect(result).toContain(errorMessage);
       });
     });
   });
