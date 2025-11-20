@@ -84,7 +84,7 @@ const updateTag = async (idToSearch: number, tagToUpdate: ITag):      Promise<IT
       return `Categoria, com o id ${idToSearch}, não encontrada.`;
     }
     
-    return { updateResult, updatedTag } as ITagUpdateResult;
+    return updateResult as unknown as ITagUpdateResult;
   } catch (error) {
     return `Ocorreu um erro na alteração de dados da categoria. ${(error as Error).message}`;
   }

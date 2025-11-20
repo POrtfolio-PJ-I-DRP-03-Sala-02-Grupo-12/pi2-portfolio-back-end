@@ -5,32 +5,53 @@ import IGameTag from "../../interfaces/IGameTag";
 export const mockGame = {
     id: 1,
     title: 'Jogo para Teste 1',
-    description: 'Descrição do jogo 1',
-    linkName: 'Link Jogo 1',
+    description: 'Descrição do jogo para teste 1',
+    linkName: 'Link Jogo para teste 1',
     linkUrl: 'https://example.com/jogo1',
 } as IGame;
+
+export const mockGame1ToInsert = {
+    title: 'Jogo para Teste 1',
+    description: 'Descrição do jogo para teste 1',
+    linkName: 'Link Jogo para teste 1',
+    linkUrl: 'https://example.com/jogo1',
+} as IGame;
+
+export const mockGame2ToInsert = {
+    title: 'Jogo para Teste 2',
+    description: 'Descrição do jogo para teste 2',
+    linkName: 'Link Jogo para teste 2',
+    linkUrl: 'https://example.com/jogo2',
+} as IGame;
+
+export const mockGame3ToInsert = {
+    title: 'Jogo para Teste 3',
+    description: 'Descrição do jogo para teste 3',
+    linkName: 'Link Jogo para teste 3',
+    linkUrl: 'https://example.com/jogo3',
+} as IGame;
+
+export const mockGameToUpdate = {
+  description: 'Descrição do jogo para teste 1 alterada',
+} as IGame;
+
+export const mockUpdatedGame: IGame = {
+  ...mockGame,
+  description: mockGameToUpdate.description,
+};
 
 export const mockGamesList = [
   {
     id: 1,
-    title: 'Jogo para Teste 1',
-    description: 'Descrição do jogo 1',
-    linkName: 'Link Jogo 1',
-    linkUrl: 'https://example.com/jogo1',
+    ...mockGame1ToInsert
   },
   {
     id: 2,
-    title: 'Jogo para Teste 2',
-    description: 'Descrição do jogo 2',
-    linkName: 'Link Jogo 2',
-    linkUrl: 'https://example.com/jogo2',
+    ...mockGame2ToInsert
   },
   {
     id: 3,
-    title: 'Jogo para Teste 3',
-    description: 'Descrição do jogo 3',
-    linkName: 'Link Jogo 3',
-    linkUrl: 'https://example.com/jogo3',
+    ...mockGame3ToInsert
   },
 ] as IGame[];
 
@@ -100,6 +121,21 @@ export const mockGameResult =
       { id: 3, title: 'Categoria TST 3' }
     ]
   };
+
+export const mockGameWithInvalidColumnName = {
+  desscription: "Tentativa de alterar jogo com nome inválido de campo",
+} as unknown as IGame;
+
+export const mockUpdateErrorMessage =
+  'Unknown column \'desscription\' in \'field list\'';
+
+export const mockUpdateError = new Error(mockUpdateErrorMessage);
+
+export const errorMessage = 'Table gabisou_db_test.games doesn\'t exist';
+export const mockError = new Error(errorMessage);
+
+export const invalidIdErrorMessage = 'Unknown column \'NaN\' in \'where\' clause';
+export const mockInvalidIdError = new Error(invalidIdErrorMessage);
 
 export const mockCreateGameQuery = `INSERT INTO games (title, description, link_name, link_url)
         VALUES (?, ?, ?, ?);

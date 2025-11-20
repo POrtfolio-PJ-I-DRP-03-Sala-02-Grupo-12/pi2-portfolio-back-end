@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mockFindAllGamesQuery = exports.mockCreateGameQuery = exports.mockGameResult = exports.mockResultSetHeader = exports.mockGameTags = exports.mockTagsList = exports.mockImagesList = exports.mockGamesList = exports.mockGame = void 0;
+exports.mockFindAllGamesQuery = exports.mockCreateGameQuery = exports.mockGameResult = exports.mockResultSetHeader = exports.mockGameTags = exports.mockTagsList = exports.mockImagesList = exports.mockGamesList = exports.mockGame3ToInsert = exports.mockGame2ToInsert = exports.mockGame1ToInsert = exports.mockGame = void 0;
 exports.mockGame = {
     id: 1,
     title: 'Jogo para Teste 1',
@@ -8,28 +8,28 @@ exports.mockGame = {
     linkName: 'Link Jogo 1',
     linkUrl: 'https://example.com/jogo1',
 };
+exports.mockGame1ToInsert = {
+    title: 'Jogo para Teste 1',
+    description: 'Descrição do jogo para teste 1',
+    linkName: 'Link Jogo para teste 1',
+    linkUrl: 'https://example.com/jogo1',
+};
+exports.mockGame2ToInsert = {
+    title: 'Jogo para Teste 2',
+    description: 'Descrição do jogo para teste 2',
+    linkName: 'Link Jogo para teste 2',
+    linkUrl: 'https://example.com/jogo2',
+};
+exports.mockGame3ToInsert = {
+    title: 'Jogo para Teste 3',
+    description: 'Descrição do jogo para teste 3',
+    linkName: 'Link Jogo para teste 3',
+    linkUrl: 'https://example.com/jogo3',
+};
 exports.mockGamesList = [
-    {
-        id: 1,
-        title: 'Jogo para Teste 1',
-        description: 'Descrição do jogo 1',
-        linkName: 'Link Jogo 1',
-        linkUrl: 'https://example.com/jogo1',
-    },
-    {
-        id: 2,
-        title: 'Jogo para Teste 2',
-        description: 'Descrição do jogo 2',
-        linkName: 'Link Jogo 2',
-        linkUrl: 'https://example.com/jogo2',
-    },
-    {
-        id: 3,
-        title: 'Jogo para Teste 3',
-        description: 'Descrição do jogo 3',
-        linkName: 'Link Jogo 3',
-        linkUrl: 'https://example.com/jogo3',
-    },
+    Object.assign({ id: 1 }, exports.mockGame1ToInsert),
+    Object.assign({ id: 2 }, exports.mockGame2ToInsert),
+    Object.assign({ id: 3 }, exports.mockGame3ToInsert),
 ];
 exports.mockImagesList = [
     {

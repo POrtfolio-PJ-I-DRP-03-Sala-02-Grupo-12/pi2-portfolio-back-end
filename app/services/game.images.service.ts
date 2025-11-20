@@ -35,9 +35,10 @@ const createNewGameImage = async (gameImage: IGameImage): Promise<IGameImage | s
 
     if (!newGameImage || !newGameImage.id || newGameImage === null) {
       return `Não foi possível cadastrar a imagem do jogo com os seguintes dados:
-        jogoId: ${gameImage.gameId}
-        url: ${gameImage.url}
+        título: ${gameImage.title}
         descrição: ${gameImage.description}
+        url: ${gameImage.url}
+        gameId: ${gameImage.gameId}
       `;
     }
 
@@ -67,11 +68,8 @@ const updateGameImage = async (gameImageToUpdate: IGameImage, id: number): Promi
     .updateImage(mergedImageData, id);
 
     if (!updateResult) return `Não foi possível alterar os dados da imagem do jogo com o id ${id}`;
-
-    const updatedGameImage: IGameImage | null = await gameImageModel
-      .findImageById(id);
-      
-    return { updateResult, updatedGameImage } as IGameImageUpdateResult;
+  
+    return updateResult as unknown as IGameImageUpdateResult;
   } catch (error) {
     return `Ocorreu um erro na alteração de dados da imagem do jogo. ${(error as Error).message}`;
   }

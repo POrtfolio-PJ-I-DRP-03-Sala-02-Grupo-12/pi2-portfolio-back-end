@@ -64,10 +64,8 @@ const updateGame = async (gameToUpdate: IGame, id: number): Promise<IGameUpdateR
     .updateGame(mergedGameData, id);
 
     if (!updateResult) return `Não foi possível alterar os dados do jogo com o id ${id}`;
-
-    const updatedGame: IGame | null = await gameModel.findGameById(id);
     
-    return {updateResult, updatedGame} as IGameUpdateResult;
+    return updateResult as unknown as IGameUpdateResult;
   } catch (error) {
     return `Ocorreu um erro na alteração de dados do jogo: ${(error as Error).message}`;
   }
@@ -80,8 +78,6 @@ const deleteGame = async (id: number): Promise<ResultSetHeader | string> => {
     if (!excludedGame) {
       return `Não foi possível excluir dados do jogo com o id ${id}`;
     }
-
-    console.log(excludedGame);
     
     return excludedGame;
   } catch (error) {

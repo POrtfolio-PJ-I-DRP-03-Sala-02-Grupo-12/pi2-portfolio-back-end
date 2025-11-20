@@ -17,6 +17,11 @@ export const mockNewGameImage = {
   gameId: 1,
 } as IGameImage;
 
+export const mockGameImage1 = {
+  id: 1,
+  ...mockNewGameImage,
+} as IGameImage;
+
 export const mockGameImagesForGameSearch = [
   {
     id: 1,
@@ -94,3 +99,13 @@ export const mockGameImagesList = [
   mockGameImage2,
   mockGameImage3,
 ] as IGameImage[];
+
+export const mockGameImageWithInvalidColumnName = {
+  desscription: "Tentativa de alterar imagem com nome inválido de campo",
+} as unknown as IGameImage;
+
+export const mockUpdateErrorMessage =
+  'Unknown column \'desscription\' in \'field list\'';
+
+export const errorMessage = 'Table gabisou_db_test.game_images doesn\'t exist';
+export const mockError = new Error(errorMessage);
