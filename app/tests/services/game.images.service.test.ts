@@ -20,6 +20,8 @@ import {
   updateGameImage,
 } from "../../services/game.images.service";  
 import {
+  errorMessage,
+  mockError,
   mockGameImage1,
   mockGameImage2,
   mockGameImage3,
@@ -32,9 +34,7 @@ import {
   mockUpdateErrorMessage
 } from "../mocks/game.images.mock";
 import {
-  errorMessage,
   invalidIdErrorMessage,
-  mockError,
   mockInvalidIdError,
   mockUpdateError
 } from "../mocks/games.mock";
