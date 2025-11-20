@@ -106,3 +106,6 @@ export const mockGameImageWithInvalidColumnName = {
 
 export const mockUpdateErrorMessage =
   'Unknown column \'desscription\' in \'field list\'';
+
+export const errorMessage = 'Table gabisou_db_test.game_images doesn\'t exist';
+export const mockError = new Error(errorMessage);
