@@ -26,4 +26,7 @@ export const mockGameTagsList = [
     gameId: 1,
     tagId: 3,
   },
-]
+];
+
+export const errorMessage = 'Table gabisou_db_test.games_tags doesn\'t exist';
+export const mockError = new Error(errorMessage);
