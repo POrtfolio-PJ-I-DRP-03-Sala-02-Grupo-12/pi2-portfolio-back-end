@@ -32,8 +32,8 @@ describe('TESTES DO CONTROLLER GAMES', () => {
 
   describe('LISTAR JOGOS', () => {
     describe('Caso não haja jogos cadastrados', () => {
-      mockRequest = {};
-      mockResponse = {
+      const mockRequest: Partial<Request> = {};
+      const mockResponse: Partial<Response> = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
@@ -58,8 +58,8 @@ describe('TESTES DO CONTROLLER GAMES', () => {
     });
 
     describe('Caso haja jogos cadastrados', () => {
-      mockRequest = {};
-      mockResponse = {
+      const mockRequest: Partial<Request> = {};
+      const mockResponse: Partial<Response> = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
@@ -82,8 +82,8 @@ describe('TESTES DO CONTROLLER GAMES', () => {
     });
 
     describe('Caso ocorra um erro', () => {
-      mockRequest = {};
-      mockResponse = {
+      const mockRequest: Partial<Request> = {};
+      const mockResponse: Partial<Response> = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
@@ -110,10 +110,10 @@ describe('TESTES DO CONTROLLER GAMES', () => {
 
   describe('BUSCAR JOGO PELO ID', () => {
     describe('Caso o jogo não seja encontrado', () => {
-      mockRequest = {
+      const mockRequest: Partial<Request> = {
         params: { id: '999' },
       };
-      mockResponse = {
+      const mockResponse: Partial<Response> = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
@@ -140,10 +140,10 @@ describe('TESTES DO CONTROLLER GAMES', () => {
     });
 
     describe('Caso o jogo seja encontrado', () => {
-      mockRequest = {
+      const mockRequest: Partial<Request> = {
         params: { id: '1' },
       };
-      mockResponse = {
+      const mockResponse: Partial<Response> = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
@@ -166,10 +166,10 @@ describe('TESTES DO CONTROLLER GAMES', () => {
     });
 
     describe('Caso ocorra um erro', () => {
-      mockRequest = {
+      const mockRequest: Partial<Request> = {
         params: { id: '1' },
       };
-      mockResponse = {
+      const mockResponse: Partial<Response> = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
