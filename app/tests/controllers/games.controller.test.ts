@@ -16,14 +16,12 @@ import {
   gamesService,
 } from "../../services/index.services";
 import {
+  createNewGame,
   findAllGames,
   findGameById,
 } from "../../controllers/games.controller";
 import { mockError, mockGamesList } from "../mocks/games.mock";
-
-let mockRequest: Partial<Request>;
-let mockResponse: Partial<Response>;
-
+import IGame from "../../interfaces/IGame";
 
 describe('TESTES DO CONTROLLER GAMES', () => {
   beforeEach(() => {
@@ -193,4 +191,60 @@ describe('TESTES DO CONTROLLER GAMES', () => {
       });
     });
   });
+
+  describe('CADASTRAR NOVO JOGO', () => {
+    describe('Caso não consiga cadastrar o jogo', () => {
+      const mockGameIncomplete: Partial<IGame> = {
+        description: "Jogo de teste incompleto",
+        linkName: "Jogo Incompleto",
+        linkUrl: "https://example.com/jogo-incompleto",
+      };
+
+      const mockRequest: Partial<Request> = {
+        body: mockGameIncomplete,
+      };
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),  
+      };
+
+      it('Deve retornar status 400', async () => {
+        (gamesService.createNewGame as jest.Mock)
+          .mockResolvedValue(
+            'Não foi possível cadastrar o jogo com os seguintes dados:\n' +
+            'título: ' + mockGameIncomplete.title + '\n' +
+            'descrição: ' + mockGameIncomplete.description + '\n' +
+            'nome do link: ' + mockGameIncomplete.linkName + '\n' +
+            'url do link: ' + mockGameIncomplete.linkUrl
+          );
+
+        await createNewGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(400);
+      });
+
+      it('Deve retornar a mensagem correta', async () => {
+        (gamesService.createNewGame as jest.Mock)
+          .mockResolvedValue(
+            'Não foi possível cadastrar o jogo com os seguintes dados:\n' +
+            'título: ' + mockGameIncomplete.title + '\n' +
+            'descrição: ' + mockGameIncomplete.description + '\n' +
+            'nome do link: ' + mockGameIncomplete.linkName + '\n' +
+            'url do link: ' + mockGameIncomplete.linkUrl
+          );
+          
+        await createNewGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith(
+          {
+            message:
+              'Não foi possível cadastrar o jogo com os seguintes dados:\n' +
+              'título: ' + mockGameIncomplete.title + '\n' +
+              'descrição: ' + mockGameIncomplete.description + '\n' +
+              'nome do link: ' + mockGameIncomplete.linkName + '\n' +
+              'url do link: ' + mockGameIncomplete.linkUrl
+          }
+        );
+      });
+    });
+  });
+
 });
