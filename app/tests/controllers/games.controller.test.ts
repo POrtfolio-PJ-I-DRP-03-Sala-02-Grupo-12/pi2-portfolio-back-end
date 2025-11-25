@@ -18,7 +18,7 @@ import {
 import {
   findAllGames,
 } from "../../controllers/games.controller";
-import { mockGamesList } from "../mocks/games.mock";
+import { mockError, mockGamesList } from "../mocks/games.mock";
 
 let mockRequest: Partial<Request>;
 let mockResponse: Partial<Response>;
@@ -77,6 +77,32 @@ describe('TESTES DO CONTROLLER GAMES', () => {
 
         await findAllGames(mockRequest as Request, mockResponse as Response);
         expect(mockResponse.json).toHaveBeenCalledWith(mockGamesList);
+      });
+    });
+
+    describe('Caso ocorra um erro', () => {
+      mockRequest = {};
+      mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      it('Deve retornar status 500', async () => {
+        (gamesService.findAllGames as jest.Mock)
+          .mockRejectedValue(mockError);
+
+        await findAllGames(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(500);
+      });
+      
+      it('Deve retornar a mensagem de erro correta', async () => {
+        (gamesService.findAllGames as jest.Mock)
+          .mockRejectedValue(mockError);
+
+        await findAllGames(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith(
+          { message: `Erro no servidor ao listar jogos: ${mockError.message}` }
+        );
       });
     });
   });
