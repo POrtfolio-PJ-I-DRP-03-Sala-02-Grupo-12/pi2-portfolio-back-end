@@ -19,13 +19,20 @@ import {
   createNewGame,
   findAllGames,
   findGameById,
+  updateGame,
 } from "../../controllers/games.controller";
 import {
   mockError,
   mockGame1ToInsert,
-  mockGamesList
+  mockGamesList,
+  mockGameToUpdate,
+  mockGameWithInvalidColumnName,
+  mockResultSetHeader,
+  mockUpdatedGame,
+  mockUpdateError
 } from "../mocks/games.mock";
 import IGame from "../../interfaces/IGame";
+import { mock } from "node:test";
 
 describe('TESTES DO CONTROLLER GAMES', () => {
   beforeEach(() => {
@@ -302,6 +309,135 @@ describe('TESTES DO CONTROLLER GAMES', () => {
         await createNewGame(mockRequest as Request, mockResponse as Response);
         expect(mockResponse.json).toHaveBeenCalledWith(
           { message: `Erro no servidor ao cadastrar jogo: ${mockError.message}` }
+        );
+      });
+    });
+  });
+
+  describe('ATUALIZAR JOGO', () => {
+    describe('Caso não consiga encontrar o jogo para atualizar', () => {
+      const mockRequest: Partial<Request> = {
+        params: { id: '999' },
+        body: mockGameToUpdate,
+      };
+
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),  
+      };
+
+      it('Deve retornar status 400', async () => {
+        (gamesService.updateGame as jest.Mock)
+          .mockResolvedValue('Jogo com o id 999 não encontrado para atualização.');
+
+        await updateGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(400);
+      });
+      
+      it('Deve retornar a mensagem correta', async () => {
+        (gamesService.updateGame as jest.Mock)
+          .mockResolvedValue('Jogo com o id 999 não encontrado para atualização.');
+
+        await updateGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith(
+          { message: 'Jogo com o id 999 não encontrado para atualização.' }
+        );
+      });
+    });
+
+    describe('Caso não consiga atualizar o jogo', () => {
+      const mockRequest: Partial<Request> = {
+        params: { id: '999' },
+        body: { description: 'Descrição alterada para teste' },
+      };
+
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),  
+      };
+
+      it('Deve retornar status 400', async () => {
+        (gamesService.updateGame as jest.Mock)
+          .mockResolvedValue('Não foi possível atualizar o jogo com id 999');
+
+        await updateGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(400);
+      });
+
+      it('Deve retornar a mensagem correta', async () => {
+        (gamesService.updateGame as jest.Mock)
+          .mockResolvedValue('Jogo com id 999 não encontrado para atualização.');
+          
+        await updateGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith(
+          { message: 'Jogo com id 999 não encontrado para atualização.' }
+        );
+      });
+    });
+
+    describe('Caso consiga atualizar o jogo', () => {
+      const mockRequest: Partial<Request> = {
+        params: { id: '1' },
+        body: { description: 'Descrição alterada para teste' },
+      };
+
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),  
+      };
+
+      it('Deve retornar status 202', async () => {
+        (gamesService.updateGame as jest.Mock)
+          .mockResolvedValue({
+            updateResult: mockResultSetHeader,
+            updatedGame: mockUpdatedGame,
+          });
+
+        await updateGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(202);
+      });
+
+      it('Deve retornar o resultado da atualização', async () => {
+        (gamesService.updateGame as jest.Mock)
+          .mockResolvedValue({
+            updateResult: mockResultSetHeader,
+            updatedGame: mockUpdatedGame,
+          });
+
+        await updateGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith({
+          updateResult: mockResultSetHeader,
+          updatedGame: mockUpdatedGame,
+        });
+      });
+    });
+
+    describe('Caso ocorra um erro', () => {
+      const mockRequest: Partial<Request> = {
+        params: { id: '1' },
+        body: mockGameWithInvalidColumnName,
+      };
+
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),  
+      };
+
+      it('Deve retornar status 500', async () => {
+        (gamesService.updateGame as jest.Mock)
+          .mockRejectedValue(mockUpdateError);
+
+        await updateGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(500);
+      });
+
+      it('Deve retornar a mensagem de erro correta', async () => {
+        (gamesService.updateGame as jest.Mock)
+          .mockRejectedValue(mockUpdateError);
+
+        await updateGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith(
+          { message: `Erro no servidor ao atualizar jogo: ${mockUpdateError.message}` }
         );
       });
     });
