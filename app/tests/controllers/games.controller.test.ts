@@ -20,7 +20,11 @@ import {
   findAllGames,
   findGameById,
 } from "../../controllers/games.controller";
-import { mockError, mockGamesList } from "../mocks/games.mock";
+import {
+  mockError,
+  mockGame1ToInsert,
+  mockGamesList
+} from "../mocks/games.mock";
 import IGame from "../../interfaces/IGame";
 
 describe('TESTES DO CONTROLLER GAMES', () => {
@@ -245,6 +249,61 @@ describe('TESTES DO CONTROLLER GAMES', () => {
         );
       });
     });
-  });
 
+    describe('Caso consiga cadastrar o jogo', () => {
+      const mockRequest: Partial<Request> = {
+        body: mockGame1ToInsert,
+      };
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),  
+      };
+
+      it('Deve retornar status 201', async () => {
+        (gamesService.createNewGame as jest.Mock)
+          .mockResolvedValue({ id: 1, ...mockGame1ToInsert });
+          
+        await createNewGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(201);
+      });
+
+      it('Deve retornar o jogo cadastrado', async () => {
+        (gamesService.createNewGame as jest.Mock)
+          .mockResolvedValue({ id: 1, ...mockGame1ToInsert });
+          
+        await createNewGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith(
+          { id: 1, ...mockGame1ToInsert }
+        );
+      });
+    });
+
+    describe('Caso ocorra um erro', () => {
+      const mockRequest: Partial<Request> = {
+        body: mockGame1ToInsert,
+      };
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),  
+      };
+
+      it('Deve retornar status 500', async () => {
+        (gamesService.createNewGame as jest.Mock)
+          .mockRejectedValue(mockError);
+          
+        await createNewGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(500);
+      });
+
+      it('Deve retornar a mensagem de erro correta', async () => {
+        (gamesService.createNewGame as jest.Mock)
+          .mockRejectedValue(mockError);
+          
+        await createNewGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith(
+          { message: `Erro no servidor ao cadastrar jogo: ${mockError.message}` }
+        );
+      });
+    });
+  });
 });
