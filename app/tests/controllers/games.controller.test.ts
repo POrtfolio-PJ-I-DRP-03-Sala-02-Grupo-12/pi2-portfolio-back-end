@@ -17,6 +17,7 @@ import {
 } from "../../services/index.services";
 import {
   createNewGame,
+  deleteGame,
   findAllGames,
   findGameById,
   updateGame,
@@ -438,6 +439,100 @@ describe('TESTES DO CONTROLLER GAMES', () => {
         await updateGame(mockRequest as Request, mockResponse as Response);
         expect(mockResponse.json).toHaveBeenCalledWith(
           { message: `Erro no servidor ao atualizar jogo: ${mockUpdateError.message}` }
+        );
+      });
+    });
+  });
+
+  describe('DELETAR JOGO', () => {
+    describe('Caso não consiga deletar o jogo', () => {
+      const mockRequest: Partial<Request> = {
+        params: { id: '999' },
+      };
+
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),  
+      };
+
+      it('Deve retornar status 400', async () => {
+        (gamesService.deleteGame as jest.Mock)
+          .mockResolvedValue(
+            'Não foi possível excluir dados do jogo com o id 999'
+          );
+
+        await deleteGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(400);
+      });
+      
+      it('Deve retornar a mensagem correta', async () => {
+        (gamesService.deleteGame as jest.Mock)
+          .mockResolvedValue(
+            'Não foi possível excluir dados do jogo com o id 999'
+          );
+
+        await deleteGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith(
+          { message: 'Não foi possível excluir dados do jogo com o id 999' }
+        );
+      });
+    });
+
+    describe('Caso consiga deletar o jogo', () => {
+      const mockRequest: Partial<Request> = {
+        params: { id: '1' },
+      };
+
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),  
+      };
+
+      it('Deve retornar status 202', async () => {
+        (gamesService.deleteGame as jest.Mock)
+          .mockResolvedValue(mockResultSetHeader);
+
+        await deleteGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(202);
+      });
+
+      it('Deve retornar o resultado da exclusão', async () => {
+        (gamesService.deleteGame as jest.Mock)
+          .mockResolvedValue(mockResultSetHeader);
+
+        await deleteGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith({
+          result: mockResultSetHeader,
+          message: 'Jogo com o id 1 excluído com sucesso.'
+        });
+      });
+    });
+
+    describe('Caso ocorra um erro', () => {
+      const mockRequest: Partial<Request> = {
+        params: { id: '1' },
+      };
+
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),  
+      };
+
+      it('Deve retornar status 500', async () => {
+        (gamesService.deleteGame as jest.Mock)
+          .mockRejectedValue(mockError);
+
+        await deleteGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(500);
+      });
+
+      it('Deve retornar a mensagem de erro correta', async () => {
+        (gamesService.deleteGame as jest.Mock)
+          .mockRejectedValue(mockError);
+
+        await deleteGame(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith(
+          { message: `Erro no servidor ao excluir jogo: ${mockError.message}` }
         );
       });
     });
