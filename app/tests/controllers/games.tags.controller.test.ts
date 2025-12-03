@@ -9,6 +9,7 @@ jest.mock('../../services/index.services'), () => ({
 import { findAllGamesTags } from "../../controllers/games.tags.controller";
 import { gamesTagsService } from "../../services/index.services";
 import { Request, Response } from "express";
+import { mockGameTagsList } from "../mocks/game.tag.mock";
 
 describe('TESTES DO CONTROLLER GAMES TAGS', () => {
   beforeEach(() => {
@@ -39,6 +40,30 @@ describe('TESTES DO CONTROLLER GAMES TAGS', () => {
         
         await findAllGamesTags(mockRequest as Request, mockResponse as Response);
         expect(mockResponse.json).toHaveBeenCalledWith({ message: notFoundMessage });
+      });
+    });
+
+    describe('Caso haja associações cadastradas', () => {
+      const mockRequest: Partial<Request> = {};
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      it('Deve retornar status 200', async () => {
+        (gamesTagsService.findAllGamesTags as jest.Mock)
+          .mockResolvedValue(mockGameTagsList);
+
+        await findAllGamesTags(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(200);
+      });
+
+      it('Deve retornar a lista de associações', async () => {
+        (gamesTagsService.findAllGamesTags as jest.Mock)
+          .mockResolvedValue(mockGameTagsList);
+          
+        await findAllGamesTags(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json).toHaveBeenCalledWith(mockGameTagsList);
       });
     });
   });
