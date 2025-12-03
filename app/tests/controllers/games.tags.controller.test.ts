@@ -9,7 +9,10 @@ jest.mock('../../services/index.services'), () => ({
 import { findAllGamesTags } from "../../controllers/games.tags.controller";
 import { gamesTagsService } from "../../services/index.services";
 import { Request, Response } from "express";
-import { mockGameTagsList } from "../mocks/game.tag.mock";
+import {
+  mockError,
+  mockGameTagsList
+} from "../mocks/game.tag.mock";
 
 describe('TESTES DO CONTROLLER GAMES TAGS', () => {
   beforeEach(() => {
@@ -64,6 +67,34 @@ describe('TESTES DO CONTROLLER GAMES TAGS', () => {
           
         await findAllGamesTags(mockRequest as Request, mockResponse as Response);
         expect(mockResponse.json).toHaveBeenCalledWith(mockGameTagsList);
+      });
+    });
+
+    describe('Caso ocorra um erro no servidor', () => {
+      const mockRequest: Partial<Request> = {};
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      it('Deve retornar status 500', async () => {
+        (gamesTagsService.findAllGamesTags as jest.Mock)
+          .mockRejectedValue(mockError);
+
+        await findAllGamesTags(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.status).toHaveBeenCalledWith(500);
+      });
+
+      it('Deve retornar a mensagem de erro do servidor', async () => {
+        (gamesTagsService.findAllGamesTags as jest.Mock)
+          .mockRejectedValue(mockError);
+
+        await findAllGamesTags(mockRequest as Request, mockResponse as Response);
+        expect(mockResponse.json)
+          .toHaveBeenCalledWith({
+            message: 'Erro no servidor ao buscar jogos associados a categorias: '
+            + mockError.message,
+        });
       });
     });
   });
