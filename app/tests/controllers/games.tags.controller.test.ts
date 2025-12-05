@@ -6,11 +6,12 @@ jest.mock('../../services/index.services'), () => ({
   }
 });
 
-import { findAllGamesTags } from "../../controllers/games.tags.controller";
+import { createNewGameTag, findAllGamesTags } from "../../controllers/games.tags.controller";
 import { gamesTagsService } from "../../services/index.services";
 import { Request, Response } from "express";
 import {
   mockError,
+  mockGameTag1,
   mockGameTagsList
 } from "../mocks/game.tag.mock";
 
@@ -93,6 +94,132 @@ describe('TESTES DO CONTROLLER GAMES TAGS', () => {
         expect(mockResponse.json)
           .toHaveBeenCalledWith({
             message: 'Erro no servidor ao buscar jogos associados a categorias: '
+            + mockError.message,
+        });
+      });
+    });
+  });
+
+  describe('CRIAR ASSOCIAÇÃO DE JOGO E CATEGORIA', () => {
+    describe('Caso não consiga criar a associação', () => {
+      const mockRequest: Partial<Request> = {
+        body: {},
+      };
+
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+      
+      it('Deve retornar status 400', async () => {
+        (gamesTagsService.createNewGameTag as jest.Mock)
+          .mockResolvedValue(
+            'Não foi possível associar a ' +
+            'categoria ao jogo com os seguintes dados:\n' +
+            ' gameId: undefined\n' +
+            ' tagId: undefined\n'
+          );
+
+        await createNewGameTag(
+          mockRequest as Request,
+          mockResponse as Response
+        );
+
+        expect(mockResponse.status).toHaveBeenCalledWith(400);
+      });
+
+      it('Deve retornar a mensagem de erro', async () => {
+        (gamesTagsService.createNewGameTag as jest.Mock)
+          .mockResolvedValue(
+            'Não foi possível associar a ' +
+            'categoria ao jogo com os seguintes dados:\n' +
+            ' gameId: undefined\n' +
+            ' tagId: undefined\n'
+          );
+        
+        await createNewGameTag(
+          mockRequest as Request,
+          mockResponse as Response
+        );
+        expect(mockResponse.json).toHaveBeenCalledWith({
+          message:
+            'Não foi possível associar a ' +
+            'categoria ao jogo com os seguintes dados:\n' +
+            ' gameId: undefined\n' +
+            ' tagId: undefined\n'
+        });
+      });
+    });
+
+    describe('Caso consiga criar a associação', () => {
+      const mockRequest: Partial<Request> = {
+        body: mockGameTag1,
+      };
+
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      it('Deve retornar status 201', async () => {
+        (gamesTagsService.createNewGameTag as jest.Mock)
+          .mockResolvedValue(mockGameTag1);
+
+        await createNewGameTag(
+          mockRequest as Request,
+          mockResponse as Response
+        );
+
+        expect(mockResponse.status).toHaveBeenCalledWith(201);
+      });
+      
+      it('Deve retornar a associação criada', async () => {
+        (gamesTagsService.createNewGameTag as jest.Mock)
+          .mockResolvedValue(mockGameTag1);
+        
+        await createNewGameTag(
+          mockRequest as Request,
+          mockResponse as Response
+        );
+        
+        expect(mockResponse.json).toHaveBeenCalledWith(mockGameTag1);
+      });
+    });
+
+    describe('Caso ocorra um erro no servidor', () => {
+      const mockRequest: Partial<Request> = {
+        body: mockGameTag1,
+      };
+
+      const mockResponse: Partial<Response> = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      it('Deve retornar status 500', async () => {
+        (gamesTagsService.createNewGameTag as jest.Mock)
+          .mockRejectedValue(mockError);
+
+        await createNewGameTag(
+          mockRequest as Request,
+          mockResponse as Response
+        );
+
+        expect(mockResponse.status).toHaveBeenCalledWith(500);
+      });
+
+      it('Deve retornar a mensagem de erro do servidor', async () => {
+        (gamesTagsService.createNewGameTag as jest.Mock)
+          .mockRejectedValue(mockError);
+
+        await createNewGameTag(
+          mockRequest as Request,
+          mockResponse as Response
+        );
+
+        expect(mockResponse.json)
+          .toHaveBeenCalledWith({
+            message: 'Erro no servidor ao associar categoria ao jogo: '
             + mockError.message,
         });
       });
