@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mockFindAllGamesQuery = exports.mockCreateGameQuery = exports.mockGameResult = exports.mockResultSetHeader = exports.mockGameTags = exports.mockTagsList = exports.mockImagesList = exports.mockGamesList = exports.mockGame3ToInsert = exports.mockGame2ToInsert = exports.mockGame1ToInsert = exports.mockGame = void 0;
+exports.mockFindAllGamesQuery = exports.mockCreateGameQuery = exports.mockInvalidIdError = exports.invalidIdErrorMessage = exports.mockError = exports.errorMessage = exports.mockUpdateError = exports.mockUpdateErrorMessage = exports.mockGameWithInvalidColumnName = exports.mockGameResult = exports.mockResultSetHeader = exports.mockGameTags = exports.mockTagsList = exports.mockImagesList = exports.mockGamesList = exports.mockUpdatedGame = exports.mockGameToUpdate = exports.mockGame3ToInsert = exports.mockGame2ToInsert = exports.mockGame1ToInsert = exports.mockGame = void 0;
 exports.mockGame = {
     id: 1,
     title: 'Jogo para Teste 1',
-    description: 'Descrição do jogo 1',
-    linkName: 'Link Jogo 1',
+    description: 'Descrição do jogo para teste 1',
+    linkName: 'Link Jogo para teste 1',
     linkUrl: 'https://example.com/jogo1',
 };
 exports.mockGame1ToInsert = {
@@ -26,6 +26,10 @@ exports.mockGame3ToInsert = {
     linkName: 'Link Jogo para teste 3',
     linkUrl: 'https://example.com/jogo3',
 };
+exports.mockGameToUpdate = {
+    description: 'Descrição do jogo para teste 1 alterada',
+};
+exports.mockUpdatedGame = Object.assign(Object.assign({}, exports.mockGame), { description: exports.mockGameToUpdate.description });
 exports.mockGamesList = [
     Object.assign({ id: 1 }, exports.mockGame1ToInsert),
     Object.assign({ id: 2 }, exports.mockGame2ToInsert),
@@ -92,6 +96,15 @@ exports.mockGameResult = {
         { id: 3, title: 'Categoria TST 3' }
     ]
 };
+exports.mockGameWithInvalidColumnName = {
+    desscription: "Tentativa de alterar jogo com nome inválido de campo",
+};
+exports.mockUpdateErrorMessage = 'Unknown column \'desscription\' in \'field list\'';
+exports.mockUpdateError = new Error(exports.mockUpdateErrorMessage);
+exports.errorMessage = 'Table gabisou_db_test.games doesn\'t exist';
+exports.mockError = new Error(exports.errorMessage);
+exports.invalidIdErrorMessage = 'Unknown column \'NaN\' in \'where\' clause';
+exports.mockInvalidIdError = new Error(exports.invalidIdErrorMessage);
 exports.mockCreateGameQuery = `INSERT INTO games (title, description, link_name, link_url)
         VALUES (?, ?, ?, ?);
       `;

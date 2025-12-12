@@ -51,11 +51,7 @@ exports.createNewGameTag = createNewGameTag;
 const deleteGameTag = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { gameId, tagId } = req.params;
-        const deletedGameTag = yield index_services_1.gamesTagsService
-            .deleteGameTag(Number(gameId), Number(tagId));
-        if (typeof deletedGameTag === 'string') {
-            return res.status(400).json({ message: deletedGameTag });
-        }
+        console.log('--------GAMEID--------\n', gameId);
         const game = yield index_services_1.gamesService
             .findGameById(Number(gameId));
         const tag = yield index_services_1.tagsService.findTagById(Number(tagId));
@@ -65,12 +61,18 @@ const deleteGameTag = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             || typeof tag === 'string'
             || !game.id
             || !tag.id) {
-            res
+            return res
                 .status(404)
                 .json({
-                message: `Não encontramos jogo com id: ${gameId} ou categria com o id
-          ${tagId}, favor verificar os dados.`
+                message: 'Não encontramos jogo com id: ' +
+                    gameId + ' ou categoria com o id: ' +
+                    tagId + ', favor verificar os dados.'
             });
+        }
+        const deletedGameTag = yield index_services_1.gamesTagsService
+            .deleteGameTag(Number(gameId), Number(tagId));
+        if (typeof deletedGameTag === 'string') {
+            return res.status(400).json({ message: deletedGameTag });
         }
         return res.status(202).json({
             deletedGameTag,
