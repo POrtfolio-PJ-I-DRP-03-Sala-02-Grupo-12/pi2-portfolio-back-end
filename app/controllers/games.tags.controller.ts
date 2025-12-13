@@ -47,14 +47,7 @@ const createNewGameTag = async (req: Request, res: Response) => {
 const deleteGameTag = async (req: Request, res: Response) => {
   try {
     const { gameId, tagId } = req.params;
-
-    const deletedGameTag: ResultSetHeader | string = await gamesTagsService
-      .deleteGameTag(Number(gameId), Number(tagId));
-
-    if (typeof deletedGameTag === 'string') {
-      return res.status(400).json({ message: deletedGameTag });
-    }
-
+    
     const game: IGame | string = await gamesService
       .findGameById(Number(gameId));
 
@@ -68,28 +61,23 @@ const deleteGameTag = async (req: Request, res: Response) => {
       || !game.id
       || !tag.id
     ) {
-      res
+      return res
         .status(404)
         .json({
-          message: `Não encontramos jogo com id: ${gameId} ou categria com o id
-          ${tagId}, favor verificar os dados.`
+          message: 'Não encontramos jogo com id: ' + 
+            gameId + ' ou categoria com o id: ' +
+          tagId + ', favor verificar os dados.'
         });
     }
 
-    return res.status(202).json({
-      deletedGameTag,
-      message: 'Relacionamento entre ' 
-      + (typeof game === 'object' && 'title' in game
-          ? game.title.toUpperCase()
-          : ''
-        )
-      + ' e '
-      + (typeof tag === 'object' && 'title' in tag
-          ? tag.title.toUpperCase()
-          : ''
-        )
-      + ' excluído com sucesso.'
-    });
+    const result: ResultSetHeader | string = await gamesTagsService
+      .deleteGameTag(Number(gameId), Number(tagId));
+
+    if (typeof result === 'string') {     
+      return res.status(400).json({ message: result });
+    }
+
+    return res.status(202).json({...result });
   } catch (error) {
     return res.status(500)
     .json({
