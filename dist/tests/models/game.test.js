@@ -30,8 +30,8 @@ describe('TESTES DO MODELO GAME', () => {
             it('Deve cadastrar e retornar corretamente o jogo', () => __awaiter(void 0, void 0, void 0, function* () {
                 const newGameData = {
                     title: 'Jogo para Teste 1',
-                    description: 'Descrição do jogo 1',
-                    linkName: 'Link Jogo 1',
+                    description: 'Descrição do jogo para teste 1',
+                    linkName: 'Link Jogo para teste 1',
                     linkUrl: 'https://example.com/jogo1'
                 };
                 connection_1.default.query

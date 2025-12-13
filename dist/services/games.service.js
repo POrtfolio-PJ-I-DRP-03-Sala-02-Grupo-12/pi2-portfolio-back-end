@@ -68,8 +68,7 @@ const updateGame = (gameToUpdate, id) => __awaiter(void 0, void 0, void 0, funct
             .updateGame(mergedGameData, id);
         if (!updateResult)
             return `Não foi possível alterar os dados do jogo com o id ${id}`;
-        const updatedGame = yield index_model_1.gameModel.findGameById(id);
-        return { updateResult, updatedGame };
+        return updateResult;
     }
     catch (error) {
         return `Ocorreu um erro na alteração de dados do jogo: ${error.message}`;
@@ -82,7 +81,6 @@ const deleteGame = (id) => __awaiter(void 0, void 0, void 0, function* () {
         if (!excludedGame) {
             return `Não foi possível excluir dados do jogo com o id ${id}`;
         }
-        console.log(excludedGame);
         return excludedGame;
     }
     catch (error) {

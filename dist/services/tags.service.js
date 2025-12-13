@@ -80,7 +80,7 @@ const updateTag = (idToSearch, tagToUpdate) => __awaiter(void 0, void 0, void 0,
         if (!updatedTag) {
             return `Categoria, com o id ${idToSearch}, não encontrada.`;
         }
-        return { updateResult, updatedTag };
+        return updateResult;
     }
     catch (error) {
         return `Ocorreu um erro na alteração de dados da categoria. ${error.message}`;

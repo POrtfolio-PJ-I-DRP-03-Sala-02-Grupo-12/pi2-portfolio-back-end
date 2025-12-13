@@ -41,9 +41,10 @@ const createNewGameImage = (gameImage) => __awaiter(void 0, void 0, void 0, func
         const newGameImage = yield index_model_1.gameImageModel.createNewImage(gameImage);
         if (!newGameImage || !newGameImage.id || newGameImage === null) {
             return `Não foi possível cadastrar a imagem do jogo com os seguintes dados:
-        jogoId: ${gameImage.gameId}
-        url: ${gameImage.url}
+        título: ${gameImage.title}
         descrição: ${gameImage.description}
+        url: ${gameImage.url}
+        gameId: ${gameImage.gameId}
       `;
         }
         return newGameImage;
@@ -67,9 +68,7 @@ const updateGameImage = (gameImageToUpdate, id) => __awaiter(void 0, void 0, voi
             .updateImage(mergedImageData, id);
         if (!updateResult)
             return `Não foi possível alterar os dados da imagem do jogo com o id ${id}`;
-        const updatedGameImage = yield index_model_1.gameImageModel
-            .findImageById(id);
-        return { updateResult, updatedGameImage };
+        return updateResult;
     }
     catch (error) {
         return `Ocorreu um erro na alteração de dados da imagem do jogo. ${error.message}`;

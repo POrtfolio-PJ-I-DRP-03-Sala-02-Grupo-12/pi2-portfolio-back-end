@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mockGameTagsList = exports.mockGameTag3 = exports.mockGameTag2 = exports.mockGameTag1 = void 0;
+exports.mockError = exports.errorMessage = exports.mockGameTagsList = exports.mockGameTag3 = exports.mockGameTag2 = exports.mockGameTag1 = void 0;
 exports.mockGameTag1 = {
     gameId: 1,
     tagId: 1,
@@ -27,3 +27,5 @@ exports.mockGameTagsList = [
         tagId: 3,
     },
 ];
+exports.errorMessage = 'Table gabisou_db_test.games_tags doesn\'t exist';
+exports.mockError = new Error(exports.errorMessage);
