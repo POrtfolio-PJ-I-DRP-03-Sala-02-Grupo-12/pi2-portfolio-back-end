@@ -47,7 +47,7 @@ const deleteGameTag = async (gameId: number, tagId: number): Promise<ResultSetHe
     );
 
     if (!result) return null;
-
+    
     return result;
   } catch (error) {
     throw new Error((error as Error).message);
