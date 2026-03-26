@@ -255,10 +255,11 @@ describe('TESTES DO CONTROLLER GAMES TAGS', () => {
                 }));
                 it('Deve retornar a confirmação de exclusão', () => __awaiter(void 0, void 0, void 0, function* () {
                     const expectedResponse = {
-                        mockGameTag1: game_tag_mock_1.mockGameTag1,
-                        message: 'Relacionamento entre ' +
-                            games_mock_1.mockGame.title.toUpperCase() +
-                            ' e ' + tag_mock_1.mockTag1.title.toUpperCase() + ' excluído com sucesso.',
+                        deletedGameTag: { gameId: 1,
+                            tagId: 1,
+                            message: 'Relacionamento entre ' +
+                                games_mock_1.mockGame.title.toUpperCase() +
+                                ' e ' + tag_mock_1.mockTag1.title.toUpperCase() + ' excluído com sucesso.', }
                     };
                     index_services_1.gamesTagsService.deleteGameTag
                         .mockResolvedValue(expectedResponse);

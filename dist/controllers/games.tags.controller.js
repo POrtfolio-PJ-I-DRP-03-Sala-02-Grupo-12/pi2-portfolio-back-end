@@ -51,7 +51,6 @@ exports.createNewGameTag = createNewGameTag;
 const deleteGameTag = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { gameId, tagId } = req.params;
-        console.log('--------GAMEID--------\n', gameId);
         const game = yield index_services_1.gamesService
             .findGameById(Number(gameId));
         const tag = yield index_services_1.tagsService.findTagById(Number(tagId));
@@ -69,23 +68,12 @@ const deleteGameTag = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                     tagId + ', favor verificar os dados.'
             });
         }
-        const deletedGameTag = yield index_services_1.gamesTagsService
+        const result = yield index_services_1.gamesTagsService
             .deleteGameTag(Number(gameId), Number(tagId));
-        if (typeof deletedGameTag === 'string') {
-            return res.status(400).json({ message: deletedGameTag });
+        if (typeof result === 'string') {
+            return res.status(400).json({ message: result });
         }
-        return res.status(202).json({
-            deletedGameTag,
-            message: 'Relacionamento entre '
-                + (typeof game === 'object' && 'title' in game
-                    ? game.title.toUpperCase()
-                    : '')
-                + ' e '
-                + (typeof tag === 'object' && 'title' in tag
-                    ? tag.title.toUpperCase()
-                    : '')
-                + ' excluído com sucesso.'
-        });
+        return res.status(202).json(Object.assign({}, result));
     }
     catch (error) {
         return res.status(500)
