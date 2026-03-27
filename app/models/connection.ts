@@ -21,7 +21,7 @@ if (NODE_ENV === "development") {
 
 if (NODE_ENV === "production") {
   connection = mysql.createPool({
-    uri: process.env.DATABASE_URL,
+    uri: process.env.MYSQL_URL,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
